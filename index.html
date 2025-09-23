@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ReadAura — Read Online</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    .hidden { display: none; }
+  </style>
+</head>
+<body class="bg-gray-50 font-sans text-gray-800">
+
+  <!-- Header -->
+  <header class="bg-white shadow p-4 flex justify-between items-center">
+    <h1 class="font-bold text-xl text-purple-600 cursor-pointer" onclick="showBooks()">ReadAura</h1>
+    <button id="auth-btn" class="bg-purple-600 text-white px-3 py-1 rounded" onclick="toggleAuth()">Sign In</button>
+  </header>
+
+  <!-- Main content -->
+  <main class="container mx-auto p-4 mt-4">
+    <!-- Book list -->
+    <div id="books-list"></div>
+
+    <!-- Book detail -->
+    <div id="book-detail" class="hidden mt-4">
+      <button onclick="showBooks()" class="text-blue-500 mb-2">&larr; Back</button>
+      
+      <!-- Book Cover -->
+      <img id="book-cover" class="w-48 h-64 object-cover mb-4 hidden rounded shadow">
+
+      <h2 id="book-title" class="text-2xl font-bold mb-2"></h2>
+      <p id="book-desc" class="mb-2"></p>
+
+      <button id="bookmark-toggle" class="mb-4 px-3 py-1 border rounded" onclick="toggleBookmark()">
+        <i id="bookmark-icon" class="far fa-bookmark"></i> Bookmark
+      </button>
+
+      <!-- Chapters -->
+      <h3 class="text-xl font-bold mb-2">Chapters</h3>
+      <div id="chapters-list" class="space-y-2 mb-4"></div>
+
+      <!-- Ads -->
+      <div id="ads-space" class="my-4"></div>
+
+      <!-- Comments -->
+      <h3 class="text-xl font-bold">Comments</h3>
+      <textarea id="comment-input" class="border w-full p-2 mt-2"></textarea>
+      <button onclick="postComment()" class="bg-purple-600 text-white px-3 py-1 mt-2 mb-4">Post</button>
+      <div id="comments-list" class="space-y-2"></div>
+    </div>
+  </main>
+
+  <!-- Firebase (Compat) -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+
+  <script>
+    // Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyA6-ATQLe_1n-GLzeXelqoO7Rm_WRXGR68",
+      authDomain: "readaura.firebaseapp.com",
+      databaseURL: "https://readaura-default-rtdb.firebaseio.com",
+      projectId: "readaura",
+      storageBucket: "readaura.appspot.com",
+      messagingSenderId: "824392534073",
+      appId: "1:824392534073:web:dfa30e0e40fa540f16a5e8",
+      measurementId: "G-G6SWNJQYR5"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.database();
+
+    let currentBookId = null;
+    let bookmarks = [];
+
+    // Show book list
+    function showBooks() {
+      document.getElementById("books-list").classList.remove("hidden");
+      document.getElementById("book-detail").classList.add("hidden");
+    }
+
+    // Load books
+    function loadBooks() {
+      db.ref("books").on("value", snap => {
+        const list = document.getElementById("books-list");
+        list.innerHTML = "";
+        snap.forEach(bookSnap => {
+          const book = bookSnap.val();
+          const div = document.createElement("div");
+          div.className = "p-4 border mb-2 cursor-pointer hover:bg-gray-100 flex items-center space-x-4";
+
+          // Add cover image (if exists)
+          const coverImg = book.coverUrl ? `<img src="${book.coverUrl}" class="w-16 h-20 object-cover rounded shadow"/>` : "";
+
+          div.innerHTML = `
+            ${coverImg}
+            <div>
+              <b>${book.title}</b><br>
+              <span class="text-sm text-gray-600">${book.author || ""}</span>
+            </div>
+          `;
+          div.onclick = () => showBookDetail(bookSnap.key, book);
+          list.appendChild(div);
+        });
+      });
+    }
+
+    // Show book detail
+    function showBookDetail(id, book) {
+      currentBookId = id;
+      document.getElementById("books-list").classList.add("hidden");
+      document.getElementById("book-detail").classList.remove("hidden");
+      document.getElementById("book-title").innerText = book.title;
+      document.getElementById("book-desc").innerText = book.description || "";
+
+      // Show or hide cover
+      const cover = document.getElementById("book-cover");
+      if (book.coverUrl) {
+        cover.src = book.coverUrl;
+        cover.classList.remove("hidden");
+      } else {
+        cover.classList.add("hidden");
+      }
+
+      updateBookmarkIcon();
+      loadChapters(id);
+      loadComments(id);
+      loadAds();
+    }
+
+    // Auth
+    function toggleAuth() {
+      if (auth.currentUser) auth.signOut();
+      else auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
+    }
+
+    auth.onAuthStateChanged(user => {
+      document.getElementById("auth-btn").innerText = user ? "Sign Out" : "Sign In";
+      if (user) loadBookmarks();
+    });
+
+    // Bookmarks
+    function toggleBookmark() {
+      if (!auth.currentUser || !currentBookId) return;
+      const uid = auth.currentUser.uid;
+      const ref = db.ref("bookmarks/" + uid);
+      if (bookmarks.includes(currentBookId)) bookmarks = bookmarks.filter(b => b !== currentBookId);
+      else bookmarks.push(currentBookId);
+      ref.set(bookmarks);
+      updateBookmarkIcon();
+    }
+
+    function loadBookmarks() {
+      const uid = auth.currentUser.uid;
+      db.ref("bookmarks/" + uid).on("value", snap => {
+        bookmarks = snap.val() || [];
+        updateBookmarkIcon();
+      });
+    }
+
+    function updateBookmarkIcon() {
+      const icon = document.getElementById("bookmark-icon");
+      if (!currentBookId) return;
+      icon.className = bookmarks.includes(currentBookId) ? "fas fa-bookmark text-purple-600" : "far fa-bookmark";
+    }
+
+    // Comments
+    function postComment() {
+      if (!auth.currentUser || !currentBookId) return;
+      const text = document.getElementById("comment-input").value.trim();
+      if (!text) return;
+      const commentRef = db.ref("comments/" + currentBookId).push();
+      commentRef.set({
+        userId: auth.currentUser.uid,
+        userName: auth.currentUser.displayName || "Anonymous",
+        text,
+        createdAt: Date.now()
+      });
+      document.getElementById("comment-input").value = "";
+    }
+
+    function loadComments(bookId) {
+      const list = document.getElementById("comments-list");
+      db.ref("comments/" + bookId).on("value", snap => {
+        list.innerHTML = "";
+        snap.forEach(c => {
+          const data = c.val();
+          const div = document.createElement("div");
+          div.className = "p-2 border rounded";
+          div.innerHTML = `<b>${data.userName}</b>: ${data.text}`;
+          list.appendChild(div);
+        });
+      });
+    }
+
+    // ✅ Chapters (updated to open chapter.html instead of alert)
+    function loadChapters(bookId) {
+      const list = document.getElementById("chapters-list");
+      db.ref("chapters/" + bookId).on("value", snap => {
+        list.innerHTML = "";
+        snap.forEach(ch => {
+          const data = ch.val();
+          const div = document.createElement("div");
+          div.className = "p-2 border cursor-pointer hover:bg-gray-100";
+          div.innerHTML = `<b>${data.title}</b>`;
+          div.onclick = () => {
+            window.location.href = `chapter.html?bookId=${bookId}&chapter=${ch.key}`;
+          };
+          list.appendChild(div);
+        });
+      });
+    }
+
+    // Ads
+    function loadAds() {
+      const adsDiv = document.getElementById("ads-space");
+      db.ref("ads").on("value", snap => {
+        adsDiv.innerHTML = "";
+        snap.forEach(ad => {
+          const data = ad.val();
+          const div = document.createElement("div");
+          div.className = "border p-2 my-2";
+          div.innerHTML = `<a href="${data.link}" target="_blank"><img src="${data.imageUrl}" class="w-full"/></a>`;
+          adsDiv.appendChild(div);
+        });
+      });
+    }
+
+    // Load all books initially
+    loadBooks();
+  </script>
+</body>
+</html>
