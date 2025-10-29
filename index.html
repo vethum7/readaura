@@ -4,8 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ReadAura — Read Online</title>
+
+  <!-- Tailwind CSS -->
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
   <style>
     .book-card {
       width: 150px;
@@ -32,6 +35,7 @@
     }
   </style>
 </head>
+
 <body class="bg-gray-50 font-sans text-gray-800">
 
   <!-- Header -->
@@ -39,9 +43,9 @@
     
     <!-- Left Section -->
     <div class="flex items-center space-x-4">
-      <!-- Logo -->
+      <!-- ✅ Dynamic Logo (updates from Admin Panel) -->
       <div id="logo" class="cursor-pointer flex items-center" onclick="goHome()">
-        <img id="site-logo" src="" alt="ReadAura Logo" class="h-10 w-auto rounded">
+        <img id="site-logo" src="default-logo.png" alt="ReadAura Logo" class="h-10 w-auto rounded">
       </div>
 
       <!-- Top Novels -->
@@ -105,6 +109,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 
   <script>
+    // ✅ Firebase Config
     const firebaseConfig = {
       apiKey: "AIzaSyA6-ATQLe_1n-GLzeXelqoO7Rm_WRXGR68",
       authDomain: "readaura.firebaseapp.com",
@@ -123,16 +128,20 @@
     let currentBookId = null;
     let bookmarks = [];
 
-    // ✅ LOAD LOGO DYNAMICALLY FROM FIREBASE
+    /* =====================================
+       🔹 LOAD LOGO DYNAMICALLY FROM ADMIN PANEL
+    ====================================== */
     function loadLogo() {
       db.ref("site/logo").on("value", snap => {
         const logoUrl = snap.val();
         const logoImg = document.getElementById("site-logo");
-        if (logoUrl) logoImg.src = logoUrl;
-        else logoImg.src = "default-logo.png"; // fallback if missing
+        logoImg.src = logoUrl || "default-logo.png"; // fallback logo
       });
     }
 
+    /* =====================================
+       🔹 MAIN NAVIGATION
+    ====================================== */
     function goHome() {
       document.getElementById("book-detail").classList.add("hidden");
       document.getElementById("books-list").classList.remove("hidden");
@@ -144,6 +153,17 @@
       document.getElementById("book-detail").classList.add("hidden");
     }
 
+    function goToAuthorPage() {
+      window.location.href = "author.html";
+    }
+
+    function showTopNovels() {
+      window.location.href = "top-novels.html";
+    }
+
+    /* =====================================
+       🔹 BOOK MANAGEMENT
+    ====================================== */
     function loadBooks() {
       db.ref("books").on("value", snap => {
         const list = document.getElementById("books-list");
@@ -188,14 +208,9 @@
       loadAds();
     }
 
-    function goToAuthorPage() {
-      window.location.href = "author.html";
-    }
-
-    function showTopNovels() {
-      window.location.href = "top-novels.html";
-    }
-
+    /* =====================================
+       🔹 AUTH
+    ====================================== */
     function toggleAuth() {
       if (auth.currentUser) auth.signOut();
       else auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
@@ -206,6 +221,9 @@
       if (user) loadBookmarks();
     });
 
+    /* =====================================
+       🔹 BOOKMARKS
+    ====================================== */
     function toggleBookmark() {
       if (!auth.currentUser || !currentBookId) return;
       const uid = auth.currentUser.uid;
@@ -232,6 +250,9 @@
         : "far fa-bookmark";
     }
 
+    /* =====================================
+       🔹 COMMENTS, CHAPTERS, ADS, SEARCH
+    ====================================== */
     function postComment() {
       if (!auth.currentUser || !currentBookId) return;
       const text = document.getElementById("comment-input").value.trim();
@@ -306,4 +327,3 @@
   </script>
 </body>
 </html>
-
