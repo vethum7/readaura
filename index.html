@@ -123,6 +123,16 @@
     let currentBookId = null;
     let bookmarks = [];
 
+    // ✅ LOAD LOGO DYNAMICALLY FROM FIREBASE
+    function loadLogo() {
+      db.ref("site/logo").on("value", snap => {
+        const logoUrl = snap.val();
+        const logoImg = document.getElementById("site-logo");
+        if (logoUrl) logoImg.src = logoUrl;
+        else logoImg.src = "default-logo.png"; // fallback if missing
+      });
+    }
+
     function goHome() {
       document.getElementById("book-detail").classList.add("hidden");
       document.getElementById("books-list").classList.remove("hidden");
@@ -290,6 +300,8 @@
       });
     }
 
+    // ✅ Initialize all
+    loadLogo();
     loadBooks();
   </script>
 </body>
