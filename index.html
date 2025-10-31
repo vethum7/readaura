@@ -43,9 +43,9 @@
     
     <!-- Left Section -->
     <div class="flex items-center space-x-4">
-      <!-- ✅ Dynamic Logo (updates from Admin Panel) -->
+      <!-- ✅ Updated Logo -->
       <div id="logo" class="cursor-pointer flex items-center" onclick="goHome()">
-        <img id="site-logo" src="default-logo.png" alt="ReadAura Logo" class="h-10 w-auto rounded">
+        <img id="site-logo" src="https://i.imgur.com/8WN9Od9.png" alt="ReadAura Logo" class="h-10 w-auto rounded">
       </div>
 
       <!-- Top Novels -->
@@ -135,7 +135,7 @@
       db.ref("site/logo").on("value", snap => {
         const logoUrl = snap.val();
         const logoImg = document.getElementById("site-logo");
-        logoImg.src = logoUrl || "default-logo.png"; // fallback logo
+        logoImg.src = logoUrl || "https://i.imgur.com/8WN9Od9.png"; // fallback logo
       });
     }
 
