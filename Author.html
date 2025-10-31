@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Become an Author | ReadAura</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans">
+
+  <!-- Header -->
+  <header class="sticky top-0 bg-white shadow p-3 flex justify-between items-center">
+    <div class="flex items-center space-x-3 cursor-pointer" onclick="goHome()">
+      <img id="site-logo" src="default-logo.png" alt="ReadAura Logo" class="h-10 w-auto rounded">
+      <h1 class="text-lg font-semibold text-purple-700">ReadAura</h1>
+    </div>
+    <button onclick="goHome()" class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700">Home</button>
+  </header>
+
+  <!-- Main -->
+  <main class="container mx-auto p-4 mt-6">
+    <h2 class="text-2xl font-bold text-purple-700 mb-4 text-center">Become an Author on ReadAura</h2>
+    <p class="text-gray-600 text-center mb-6">Below are messages and guidance shared by the ReadAura Admin Team for aspiring authors.</p>
+
+    <!-- Messages Section -->
+    <div id="messages" class="space-y-4 max-w-3xl mx-auto"></div>
+  </main>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+
+  <script>
+    // ✅ Firebase Config
+    const firebaseConfig = {
+      apiKey: "AIzaSyA6-ATQLe_1n-GLzeXelqoO7Rm_WRXGR68",
+      authDomain: "readaura.firebaseapp.com",
+      databaseURL: "https://readaura-default-rtdb.firebaseio.com",
+      projectId: "readaura",
+      storageBucket: "readaura.appspot.com",
+      messagingSenderId: "824392534073",
+      appId: "1:824392534073:web:dfa30e0e40fa540f16a5e8",
+      measurementId: "G-G6SWNJQYR5"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    // 🔹 Load logo dynamically
+    db.ref("site/logo").on("value", snap => {
+      const logoUrl = snap.val();
+      if (logoUrl) document.getElementById("site-logo").src = logoUrl;
+    });
+
+    // 🔹 Load admin messages for authors
+    function loadAuthorMessages() {
+      const msgContainer = document.getElementById("messages");
+      db.ref("authorMessages").on("value", snap => {
+        msgContainer.innerHTML = "";
+        if (!snap.exists()) {
+          msgContainer.innerHTML = `<p class="text-gray-500 text-center">No messages available yet.</p>`;
+          return;
+        }
+        snap.forEach(m => {
+          const data = m.val();
+          const div = document.createElement("div");
+          div.className = "p-4 border rounded bg-white shadow-sm";
+          div.innerHTML = `
+            <h3 class="font-semibold text-purple-700 mb-2">${data.title || "Message"}</h3>
+            <p class="text-gray-700">${data.text || ""}</p>
+            <p class="text-xs text-gray-400 mt-1">Posted on: ${new Date(data.createdAt || Date.now()).toLocaleString()}</p>
+          `;
+          msgContainer.appendChild(div);
+        });
+      });
+    }
+
+    function goHome() {
+      window.location.href = "index.html";
+    }
+
+    // ✅ Initialize
+    loadAuthorMessages();
+  </script>
+</body>
+</html>
