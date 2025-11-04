@@ -3,83 +3,106 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Become an Author | ReadAura</title>
+  <title>Become an Author — ReadAura</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body class="bg-gray-50 text-gray-800 font-sans">
+<body class="bg-gray-50 text-gray-800">
 
-  <!-- Header -->
-  <header class="sticky top-0 bg-white shadow p-3 flex justify-between items-center">
-    <div class="flex items-center space-x-3 cursor-pointer" onclick="goHome()">
-      <img id="site-logo" src="default-logo.png" alt="ReadAura Logo" class="h-10 w-auto rounded">
-      <h1 class="text-lg font-semibold text-purple-700">ReadAura</h1>
+  <section class="max-w-5xl mx-auto px-6 py-16">
+    <h1 class="text-4xl font-bold text-center text-orange-600 mb-8">📘 Become an Author</h1>
+    <p class="text-center text-lg mb-12 text-gray-700">
+      Turn your imagination into inspiration.  
+      Publish your stories on <span class="font-semibold">ReadAura</span> — reach readers, grow your fanbase, and even earn from your affiliate links!
+    </p>
+
+    <!-- Why Publish -->
+    <div class="bg-white shadow-md rounded-2xl p-8 mb-10">
+      <h2 class="text-2xl font-semibold text-orange-500 mb-4">✨ Why Publish on ReadAura?</h2>
+      <p class="mb-3">
+        ReadAura is a free reading platform where readers from around the world discover new stories every day.  
+        We help authors grow their audience, build recognition, and even earn through affiliate links — all for free.
+      </p>
+      <ul class="list-disc pl-6 space-y-1">
+        <li>Keep 100% ownership of your stories</li>
+        <li>Reach thousands of potential readers</li>
+        <li>Get your own author profile and story pages</li>
+        <li>Earn from your affiliate links and reader support</li>
+      </ul>
     </div>
-    <button onclick="goHome()" class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700">Home</button>
-  </header>
 
-  <!-- Main -->
-  <main class="container mx-auto p-4 mt-6">
-    <h2 class="text-2xl font-bold text-purple-700 mb-4 text-center">Become an Author on ReadAura</h2>
-    <p class="text-gray-600 text-center mb-6">Below are messages and guidance shared by the ReadAura Admin Team for aspiring authors.</p>
+    <!-- Affiliate Section -->
+    <div class="bg-orange-50 border-l-4 border-orange-400 p-6 rounded-xl mb-10">
+      <h2 class="text-2xl font-semibold text-orange-600 mb-3">💰 Earn Through Affiliate Links</h2>
+      <p class="mb-3">
+        Unlike most free reading platforms, <strong>ReadAura</strong> lets you include your own affiliate links at the end of every chapter.
+        You can earn when readers click your links and buy related products.
+      </p>
+      <ul class="list-disc pl-6 space-y-1">
+        <li>🔗 Add Amazon or Audible affiliate links</li>
+        <li>❤️ Link your Patreon or Ko-fi page</li>
+        <li>📚 Promote your other books or YouTube channels</li>
+      </ul>
+      <p class="mt-3 font-medium text-gray-700">
+        You keep <strong>100% of your affiliate earnings</strong> — ReadAura takes nothing.
+      </p>
+    </div>
 
-    <!-- Messages Section -->
-    <div id="messages" class="space-y-4 max-w-3xl mx-auto"></div>
-  </main>
+    <!-- Getting Started -->
+    <div class="bg-white shadow-md rounded-2xl p-8 mb-10">
+      <h2 class="text-2xl font-semibold text-orange-500 mb-4">🚀 How to Get Started</h2>
+      <ol class="list-decimal pl-6 space-y-2">
+        <li>Prepare your story file (Word, PDF, or text).</li>
+        <li>Include your affiliate links at the end of each chapter (optional).</li>
+        <li>Send your story directly through Telegram using the button below.</li>
+        <li>We’ll review it and publish it on ReadAura within 48 hours.</li>
+      </ol>
 
-  <!-- Firebase -->
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+      <!-- Telegram Button -->
+      <div class="text-center mt-8">
+        <a href="https://t.me/ReadAura" target="_blank"
+           class="inline-block bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 px-6 rounded-full shadow-lg transition">
+          📩 Submit via Telegram
+        </a>
+      </div>
+    </div>
 
-  <script>
-    // ✅ Firebase Config
-    const firebaseConfig = {
-      apiKey: "AIzaSyA6-ATQLe_1n-GLzeXelqoO7Rm_WRXGR68",
-      authDomain: "readaura.firebaseapp.com",
-      databaseURL: "https://readaura-default-rtdb.firebaseio.com",
-      projectId: "readaura",
-      storageBucket: "readaura.appspot.com",
-      messagingSenderId: "824392534073",
-      appId: "1:824392534073:web:dfa30e0e40fa540f16a5e8",
-      measurementId: "G-G6SWNJQYR5"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
+    <!-- Rules -->
+    <div class="bg-gray-100 p-8 rounded-2xl mb-10">
+      <h2 class="text-2xl font-semibold text-orange-500 mb-4">🧾 Affiliate Link & Content Rules</h2>
+      <p class="mb-3">To keep ReadAura a safe and trusted platform, please follow these simple rules:</p>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <h3 class="font-semibold text-green-600 mb-2">✅ Allowed</h3>
+          <ul class="list-disc pl-6 space-y-1">
+            <li>Amazon, Audible, or Bookshop.org affiliate links</li>
+            <li>Patreon, Ko-fi, or BuyMeACoffee pages</li>
+            <li>Links to your own website or other books</li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="font-semibold text-red-600 mb-2">❌ Not Allowed</h3>
+          <ul class="list-disc pl-6 space-y-1">
+            <li>Adult or explicit content</li>
+            <li>Gambling, crypto, or scam links</li>
+            <li>Spam or misleading advertisements</li>
+          </ul>
+        </div>
+      </div>
+    </div>
 
-    // 🔹 Load logo dynamically
-    db.ref("site/logo").on("value", snap => {
-      const logoUrl = snap.val();
-      if (logoUrl) document.getElementById("site-logo").src = logoUrl;
-    });
+    <!-- Join Section -->
+    <div class="bg-orange-500 text-white p-10 rounded-2xl text-center shadow-lg">
+      <h2 class="text-3xl font-bold mb-4">🌟 Join the ReadAura Author Community</h2>
+      <p class="max-w-2xl mx-auto mb-6 text-lg">
+        Publish your stories for free, grow your reader base, and earn through your affiliate links.  
+        Your words deserve to be read.
+      </p>
+      <a href="https://t.me/ReadAura" target="_blank"
+         class="bg-white text-orange-600 font-semibold py-3 px-6 rounded-full hover:bg-gray-100 transition">
+        📖 Start Publishing on Telegram
+      </a>
+    </div>
+  </section>
 
-    // 🔹 Load admin messages for authors
-    function loadAuthorMessages() {
-      const msgContainer = document.getElementById("messages");
-      db.ref("authorMessages").on("value", snap => {
-        msgContainer.innerHTML = "";
-        if (!snap.exists()) {
-          msgContainer.innerHTML = `<p class="text-gray-500 text-center">No messages available yet.</p>`;
-          return;
-        }
-        snap.forEach(m => {
-          const data = m.val();
-          const div = document.createElement("div");
-          div.className = "p-4 border rounded bg-white shadow-sm";
-          div.innerHTML = `
-            <h3 class="font-semibold text-purple-700 mb-2">${data.title || "Message"}</h3>
-            <p class="text-gray-700">${data.text || ""}</p>
-            <p class="text-xs text-gray-400 mt-1">Posted on: ${new Date(data.createdAt || Date.now()).toLocaleString()}</p>
-          `;
-          msgContainer.appendChild(div);
-        });
-      });
-    }
-
-    function goHome() {
-      window.location.href = "index.html";
-    }
-
-    // ✅ Initialize
-    loadAuthorMessages();
-  </script>
 </body>
 </html>
