@@ -1,36 +1,75 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ReadAura — Book Details</title>
+  <title>Book Details — ReadAura</title>
+
+  <!-- Google AdSense -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2883257010372888"
+     crossorigin="anonymous"></script>
 
   <!-- Tailwind CSS -->
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background-color: white;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .chapter-card {
+      transition: background-color 0.2s ease;
+    }
+    .chapter-card:hover {
+      background-color: #f3e8ff;
+    }
+  </style>
 </head>
 <body class="bg-gray-50 font-sans text-gray-800">
 
   <!-- Header -->
-  <header class="p-4 bg-white shadow-md flex justify-between items-center sticky top-0">
-    <div class="flex items-center space-x-3">
-      <img src="https://i.imgur.com/8WN9Od9.png" alt="Logo" class="h-10 rounded cursor-pointer" onclick="goHome()">
-      <h1 class="text-xl font-semibold text-purple-700 cursor-pointer" onclick="goHome()">ReadAura</h1>
+  <header class="p-3 flex items-center justify-between">
+    <div class="flex items-center space-x-4">
+      <div id="logo" class="cursor-pointer flex items-center" onclick="goHome()">
+        <img id="site-logo" src="https://i.imgur.com/8WN9Od9.png" alt="ReadAura Logo" class="h-10 w-auto rounded">
+      </div>
+      <button onclick="goHome()" class="text-purple-600 font-semibold hover:underline whitespace-nowrap">
+        Home
+      </button>
+      <button onclick="goToTopNovels()" class="text-purple-600 font-semibold hover:underline whitespace-nowrap">
+        Top Novels
+      </button>
     </div>
-    <button class="bg-purple-600 text-white px-4 py-1 rounded" onclick="goBack()">Back</button>
+    <div class="flex items-center space-x-2">
+      <button id="auth-btn" class="bg-purple-600 text-white px-3 py-1 rounded" onclick="toggleAuth()">
+        Sign In
+      </button>
+    </div>
   </header>
 
-  <!-- Book Details -->
-  <main class="container mx-auto p-6" id="book-container">
+  <!-- Main Content -->
+  <main class="container mx-auto p-6 mt-6" id="book-content">
     <p class="text-center text-gray-500">Loading book details...</p>
   </main>
 
-  <!-- Firebase -->
+  <!-- Footer -->
+  <footer class="bg-gray-900 text-white py-6 mt-10">
+    <div class="container mx-auto text-center text-sm">
+      &copy; 2025 ReadAura. All rights reserved.
+    </div>
+  </footer>
+
+  <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 
   <script>
-    // Firebase config
+    // ✅ Firebase Config (same as your other pages)
     const firebaseConfig = {
       apiKey: "AIzaSyA6-ATQLe_1n-GLzeXelqoO7Rm_WRXGR68",
       authDomain: "readaura.firebaseapp.com",
@@ -38,127 +77,126 @@
       projectId: "readaura",
       storageBucket: "readaura.appspot.com",
       messagingSenderId: "824392534073",
-      appId: "1:824392534073:web:dfa30e0e40fa540f16a5e8"
+      appId: "1:824392534073:web:dfa30e0e40fa540f16a5e8",
+      measurementId: "G-G6SWNJQYR5"
     };
+
     firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
     const db = firebase.database();
 
-    // Navigation
+    /* ===============================
+       🔹 NAVIGATION
+    ================================ */
     function goHome() {
       window.location.href = "index.html";
     }
-    function goBack() {
-      window.history.back();
+    function goToTopNovels() {
+      window.location.href = "top-novels.html";
     }
 
-    // Get book ID from URL
+    /* ===============================
+       🔹 LOAD LOGO
+    ================================ */
+    function loadLogo() {
+      db.ref("site/logo").on("value", snap => {
+        const logoUrl = snap.val();
+        const logoImg = document.getElementById("site-logo");
+        logoImg.src = logoUrl || "https://i.imgur.com/8WN9Od9.png";
+      });
+    }
+
+    /* ===============================
+       🔹 GET BOOK ID FROM URL
+    ================================ */
     const params = new URLSearchParams(window.location.search);
     const bookId = params.get("id");
 
-    // Load book data
-    function loadBook() {
-      const container = document.getElementById("book-container");
+    /* ===============================
+       🔹 LOAD BOOK DETAILS
+    ================================ */
+    function loadBookDetails() {
+      const content = document.getElementById("book-content");
 
       if (!bookId) {
-        container.innerHTML = "<p class='text-center text-red-500'>Book not found.</p>";
+        content.innerHTML = "<p class='text-center text-red-500'>Invalid book link.</p>";
         return;
       }
 
-      const bookRef = db.ref("books/" + bookId);
-      bookRef.once("value").then(snap => {
-        if (!snap.exists()) {
-          container.innerHTML = "<p class='text-center text-red-500'>Book not found.</p>";
+      db.ref("books/" + bookId).once("value").then(snapshot => {
+        if (!snapshot.exists()) {
+          content.innerHTML = "<p class='text-center text-gray-500'>Book not found.</p>";
           return;
         }
 
-        const book = snap.val();
+        const data = snapshot.val();
+        const cover = data.cover || "https://via.placeholder.com/150?text=No+Cover";
+        const title = data.title || "Untitled Novel";
+        const author = data.author || "Unknown Author";
+        const description = data.description || "No description available.";
+        const views = data.weeklyViews || 0;
+        const chapters = data.chapters || {};
 
-        container.innerHTML = `
-          <div class="bg-white rounded-lg shadow-lg p-6 max-w-3xl mx-auto">
-            <div class="flex flex-col md:flex-row items-center">
-              <img src="${book.cover || 'https://via.placeholder.com/150'}" alt="${book.title}"
-                   class="w-48 h-64 object-cover rounded-lg mb-4 md:mb-0 md:mr-6">
-              <div>
-                <h2 class="text-2xl font-bold mb-2">${book.title}</h2>
-                <p class="text-gray-700 mb-1">By <span class="font-medium">${book.author || 'Unknown'}</span></p>
-                <p class="text-sm text-gray-500 mb-3">${book.views || 0} total views</p>
-                <p class="text-gray-800 leading-relaxed">${book.description || 'No description available.'}</p>
-              </div>
-            </div>
-            <div class="mt-6 border-t pt-4" id="chapters-container">
-              <h3 class="text-xl font-semibold mb-3">📖 Chapters</h3>
-              <p class="text-gray-500">Loading chapters...</p>
+        // Display the book details
+        content.innerHTML = `
+          <div class="bg-white shadow-lg rounded-lg p-6 md:flex">
+            <img src="${cover}" alt="${title}" class="w-48 h-64 object-cover rounded-lg mx-auto md:mx-0">
+            <div class="md:ml-8 mt-6 md:mt-0 flex-1">
+              <h1 class="text-2xl font-bold mb-2 text-purple-700">${title}</h1>
+              <p class="text-gray-600 mb-2">by <span class="font-medium">${author}</span></p>
+              <p class="text-sm text-gray-500 mb-4">${views} views this week</p>
+              <p class="text-gray-700 leading-relaxed">${description}</p>
             </div>
           </div>
+
+          <h2 class="text-xl font-semibold mt-8 mb-3 text-gray-800">📖 Chapters</h2>
+          <div id="chapters-list" class="space-y-2"></div>
         `;
 
-        incrementViews(bookRef, book);
-        loadChapters(bookId);
-      });
-    }
+        // Load chapters
+        const chaptersList = document.getElementById("chapters-list");
+        const chapterKeys = Object.keys(chapters);
 
-    // Increment views
-    function incrementViews(bookRef, book) {
-      const totalViews = (book.views || 0) + 1;
-      const weeklyViews = (book.weeklyViews || 0) + 1;
-
-      bookRef.update({
-        views: totalViews,
-        weeklyViews: weeklyViews
-      });
-    }
-
-    // Load chapters
-    function loadChapters(bookId) {
-      const chaptersRef = db.ref("chapters/" + bookId);
-      const container = document.getElementById("chapters-container");
-
-      chaptersRef.once("value").then(snapshot => {
-        if (!snapshot.exists()) {
-          container.innerHTML = "<p class='text-gray-500'>No chapters yet.</p>";
-          return;
+        if (chapterKeys.length === 0) {
+          chaptersList.innerHTML = "<p class='text-gray-500'>No chapters available yet.</p>";
+        } else {
+          chapterKeys.forEach(chapterId => {
+            const chapter = chapters[chapterId];
+            const div = document.createElement("div");
+            div.className = "chapter-card p-3 bg-white rounded-lg shadow cursor-pointer";
+            div.innerHTML = `
+              <h3 class="font-semibold text-gray-800">${chapter.title || "Untitled Chapter"}</h3>
+              <p class="text-sm text-gray-500">Words: ${chapter.wordCount || 0}</p>
+            `;
+            div.onclick = () => openChapter(bookId, chapterId);
+            chaptersList.appendChild(div);
+          });
         }
-
-        const chapters = snapshot.val();
-        const sortedKeys = Object.keys(chapters).sort((a, b) => {
-          const numA = parseInt(a.replace(/\D/g, '')) || 0;
-          const numB = parseInt(b.replace(/\D/g, '')) || 0;
-          return numA - numB;
-        });
-
-        container.innerHTML = "<h3 class='text-xl font-semibold mb-3'>📖 Chapters</h3><div class='space-y-3'></div>";
-        const listContainer = container.querySelector('div.space-y-3');
-
-        sortedKeys.forEach((key, index) => {
-          const chapter = chapters[key];
-          const chapterTitle = chapter.title || `Chapter ${index + 1}`;
-          const chapterContent = chapter.content || 'No content available.';
-
-          const chapterBlock = document.createElement("div");
-          chapterBlock.className = "border border-gray-200 rounded-lg overflow-hidden";
-
-          chapterBlock.innerHTML = `
-            <button class="w-full text-left px-4 py-2 bg-gray-100 hover:bg-gray-200 font-semibold"
-                    onclick="toggleChapterContent('${key}')">
-              ${chapterTitle}
-            </button>
-            <div id="content-${key}" class="hidden px-4 py-3 bg-white text-gray-800 whitespace-pre-line">
-              ${chapterContent}
-            </div>
-          `;
-
-          listContainer.appendChild(chapterBlock);
-        });
       });
     }
 
-    // Toggle chapter content visibility
-    function toggleChapterContent(chapterId) {
-      const content = document.getElementById(`content-${chapterId}`);
-      content.classList.toggle("hidden");
+    /* ===============================
+       🔹 OPEN CHAPTER
+    ================================ */
+    function openChapter(bookId, chapterId) {
+      window.location.href = `chapter.html?book=${encodeURIComponent(bookId)}&chapter=${encodeURIComponent(chapterId)}`;
     }
 
-    loadBook();
+    /* ===============================
+       🔹 AUTH
+    ================================ */
+    function toggleAuth() {
+      if (auth.currentUser) auth.signOut();
+      else auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
+    }
+
+    auth.onAuthStateChanged(user => {
+      document.getElementById("auth-btn").innerText = user ? "Sign Out" : "Sign In";
+    });
+
+    // ✅ Initialize
+    loadLogo();
+    loadBookDetails();
   </script>
 </body>
 </html>
