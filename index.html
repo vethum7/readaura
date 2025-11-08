@@ -28,7 +28,6 @@
       box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     }
 
-    /* Sticky Header */
     header {
       position: sticky;
       top: 0;
@@ -43,35 +42,27 @@
 
   <!-- Header -->
   <header class="p-3 flex items-center justify-between">
-    
-    <!-- Left Section -->
     <div class="flex items-center space-x-4">
-      <!-- ✅ Updated Logo -->
       <div id="logo" class="cursor-pointer flex items-center" onclick="goHome()">
         <img id="site-logo" src="https://i.imgur.com/8WN9Od9.png" alt="ReadAura Logo" class="h-10 w-auto rounded">
       </div>
 
-      <!-- Top Novels -->
       <button onclick="showTopNovels()" class="text-purple-600 font-semibold hover:underline whitespace-nowrap">
         Top Novels
       </button>
 
-      <!-- Become an Author -->
       <button onclick="goToAuthorPage()" class="text-purple-600 font-semibold hover:underline whitespace-nowrap">
         Become an Author
       </button>
     </div>
 
-    <!-- Right Section -->
     <div class="flex items-center space-x-2">
-      <!-- Search Bar -->
       <div class="flex items-center bg-gray-100 px-3 py-1 rounded w-48 sm:w-64">
         <i class="fas fa-search text-gray-500 mr-2"></i>
         <input id="search-input" type="text" placeholder="Search books..." 
           class="bg-transparent outline-none w-full text-sm" oninput="searchBooks()">
       </div>
 
-      <!-- Sign In / Sign Out -->
       <button id="auth-btn" class="bg-purple-600 text-white px-3 py-1 rounded" onclick="toggleAuth()">
         Sign In
       </button>
@@ -131,20 +122,16 @@
     let currentBookId = null;
     let bookmarks = [];
 
-    /* =====================================
-       🔹 LOAD LOGO DYNAMICALLY FROM ADMIN PANEL
-    ====================================== */
+    // Load Logo
     function loadLogo() {
       db.ref("site/logo").on("value", snap => {
         const logoUrl = snap.val();
         const logoImg = document.getElementById("site-logo");
-        logoImg.src = logoUrl || "https://i.imgur.com/8WN9Od9.png"; // fallback logo
+        logoImg.src = logoUrl || "https://i.imgur.com/8WN9Od9.png";
       });
     }
 
-    /* =====================================
-       🔹 MAIN NAVIGATION
-    ====================================== */
+    // NAVIGATION
     function goHome() {
       document.getElementById("book-detail").classList.add("hidden");
       document.getElementById("books-list").classList.remove("hidden");
@@ -156,17 +143,15 @@
       document.getElementById("book-detail").classList.add("hidden");
     }
 
- function goToAuthorPage() {
-  window.location.href = "become-an-author.html";
-}
+    function goToAuthorPage() {
+      window.location.href = "become-an-author.html";
+    }
 
     function showTopNovels() {
       window.location.href = "top-novels.html";
     }
 
-    /* =====================================
-       🔹 BOOK MANAGEMENT
-    ====================================== */
+    // LOAD BOOKS
     function loadBooks() {
       db.ref("books").on("value", snap => {
         const list = document.getElementById("books-list");
@@ -192,6 +177,7 @@
       });
     }
 
+    // SHOW BOOK DETAIL
     function showBookDetail(id, book) {
       currentBookId = id;
       document.getElementById("books-list").classList.add("hidden");
@@ -209,11 +195,17 @@
       loadChapters(id);
       loadComments(id);
       loadAds();
+
+      // 🔹 Increment total + weekly views
+      db.ref("books/" + id).once("value").then(snap => {
+        const bookData = snap.val();
+        const totalViews = (bookData.views || 0) + 1;
+        const weeklyViews = (bookData.weeklyViews || 0) + 1;
+        db.ref("books/" + id).update({ views: totalViews, weeklyViews: weeklyViews });
+      });
     }
 
-    /* =====================================
-       🔹 AUTH
-    ====================================== */
+    // AUTH
     function toggleAuth() {
       if (auth.currentUser) auth.signOut();
       else auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
@@ -224,9 +216,7 @@
       if (user) loadBookmarks();
     });
 
-    /* =====================================
-       🔹 BOOKMARKS
-    ====================================== */
+    // BOOKMARKS
     function toggleBookmark() {
       if (!auth.currentUser || !currentBookId) return;
       const uid = auth.currentUser.uid;
@@ -253,9 +243,7 @@
         : "far fa-bookmark";
     }
 
-    /* =====================================
-       🔹 COMMENTS, CHAPTERS, ADS, SEARCH
-    ====================================== */
+    // COMMENTS, CHAPTERS, ADS, SEARCH
     function postComment() {
       if (!auth.currentUser || !currentBookId) return;
       const text = document.getElementById("comment-input").value.trim();
@@ -324,11 +312,26 @@
       });
     }
 
-    // ✅ Initialize all
+    // ✅ INITIALIZE EVERYTHING
     loadLogo();
     loadBooks();
+
+    /* ============================================================
+       ✅ HANDLE REDIRECT FROM TOP-NOVELS PAGE
+       - Opens book detail directly if URL has ?id=BOOK_ID
+    ============================================================ */
+    const params = new URLSearchParams(window.location.search);
+    const bookId = params.get("id");
+
+    if (bookId) {
+      db.ref("books/" + bookId).once("value").then(snap => {
+        if (snap.exists()) {
+          showBookDetail(bookId, snap.val());
+        } else {
+          alert("This book no longer exists.");
+        }
+      });
+    }
   </script>
 </body>
 </html>
-
-
