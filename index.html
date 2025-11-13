@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ReadAura — Read Online</title>
 
+  <!-- Google AdSense -->
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2883257010372888"
      crossorigin="anonymous"></script>
   
@@ -171,13 +172,17 @@
             <p class="text-xs text-gray-600">${book.author || ""}</p>
           `;
 
-          div.onclick = () => showBookDetail(bookSnap.key, book);
+          // ✅ FIXED: Redirect to book.html instead of showing inline details
+          div.onclick = () => {
+            window.location.href = \`book.html?id=\${bookSnap.key}\`;
+          };
+
           list.appendChild(div);
         });
       });
     }
 
-    // SHOW BOOK DETAIL
+    // SHOW BOOK DETAIL (kept intact)
     function showBookDetail(id, book) {
       currentBookId = id;
       document.getElementById("books-list").classList.add("hidden");
@@ -196,7 +201,7 @@
       loadComments(id);
       loadAds();
 
-      // 🔹 Increment total + weekly views
+      // Increment total + weekly views
       db.ref("books/" + id).once("value").then(snap => {
         const bookData = snap.val();
         const totalViews = (bookData.views || 0) + 1;
@@ -312,17 +317,13 @@
       });
     }
 
-    // ✅ INITIALIZE EVERYTHING
+    // INITIALIZE EVERYTHING
     loadLogo();
     loadBooks();
 
-    /* ============================================================
-       ✅ HANDLE REDIRECT FROM TOP-NOVELS PAGE
-       - Opens book detail directly if URL has ?id=BOOK_ID
-    ============================================================ */
+    // HANDLE DIRECT ACCESS WITH ?id=BOOK_ID
     const params = new URLSearchParams(window.location.search);
     const bookId = params.get("id");
-
     if (bookId) {
       db.ref("books/" + bookId).once("value").then(snap => {
         if (snap.exists()) {
