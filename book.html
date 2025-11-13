@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Book Details — ReadAura</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Book — ReadAura</title>
 
   <!-- Google AdSense -->
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2883257010372888"
-     crossorigin="anonymous"></script>
+    crossorigin="anonymous"></script>
 
   <!-- Tailwind CSS -->
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
@@ -21,11 +21,11 @@
       background-color: white;
       box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
-    .chapter-card {
-      transition: background-color 0.2s ease;
+    .book-cover {
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
     }
     .chapter-card:hover {
-      background-color: #f3e8ff;
+      background-color: #f3f4f6;
     }
   </style>
 </head>
@@ -40,20 +40,58 @@
       <button onclick="goHome()" class="text-purple-600 font-semibold hover:underline whitespace-nowrap">
         Home
       </button>
-      <button onclick="goToTopNovels()" class="text-purple-600 font-semibold hover:underline whitespace-nowrap">
-        Top Novels
+      <button onclick="goToAuthorPage()" class="text-purple-600 font-semibold hover:underline whitespace-nowrap">
+        Become an Author
       </button>
     </div>
     <div class="flex items-center space-x-2">
+      <div class="flex items-center bg-gray-100 px-3 py-1 rounded w-48 sm:w-64">
+        <i class="fas fa-search text-gray-500 mr-2"></i>
+        <input id="search-input" type="text" placeholder="Search novels..." 
+          class="bg-transparent outline-none w-full text-sm" oninput="searchNovels()">
+      </div>
       <button id="auth-btn" class="bg-purple-600 text-white px-3 py-1 rounded" onclick="toggleAuth()">
         Sign In
       </button>
     </div>
   </header>
 
-  <!-- Main Content -->
-  <main class="container mx-auto p-6 mt-6" id="book-content">
-    <p class="text-center text-gray-500">Loading book details...</p>
+  <!-- Book Section -->
+  <main class="container mx-auto p-6">
+    <div id="book-detail" class="bg-white rounded-lg shadow-lg p-6">
+      <div class="flex flex-col md:flex-row">
+        <img id="book-cover" src="https://via.placeholder.com/200x300" alt="Book Cover" class="book-cover w-40 h-56 md:w-52 md:h-72 object-cover rounded-lg mx-auto md:mx-0" />
+        <div class="md:ml-6 mt-4 md:mt-0 flex-1">
+          <h1 id="book-title" class="text-2xl font-bold text-gray-900 mb-2">Book Title</h1>
+          <p id="book-author" class="text-gray-600 mb-1">Author: Unknown</p>
+          <p id="book-genre" class="text-gray-600 mb-1">Genre: N/A</p>
+          <p id="book-status" class="text-gray-600 mb-1">Status: Ongoing</p>
+          <p id="book-rating" class="text-yellow-500 text-sm mb-1"><i class="fa fa-star"></i> 4.7 (1,234 ratings)</p>
+          <p id="book-updated" class="text-gray-500 text-sm mb-3">Last updated: Just now</p>
+
+          <div class="flex space-x-3 mt-3">
+            <button class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded shadow-md" onclick="readNow()">📖 Read Now</button>
+            <button class="border border-purple-600 text-purple-600 hover:bg-purple-50 px-4 py-2 rounded shadow-md" onclick="addToLibrary()">💜 Add to Library</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Summary -->
+      <section class="mt-8">
+        <h2 class="text-xl font-semibold border-b pb-2 mb-3">Synopsis</h2>
+        <p id="book-summary" class="text-gray-700 leading-relaxed">
+          Loading synopsis...
+        </p>
+      </section>
+
+      <!-- Chapters -->
+      <section class="mt-8">
+        <h2 class="text-xl font-semibold border-b pb-2 mb-3">Chapters</h2>
+        <div id="chapter-list" class="space-y-2 max-h-96 overflow-y-auto">
+          <p class="text-gray-500 text-sm">Loading chapters...</p>
+        </div>
+      </section>
+    </div>
   </main>
 
   <!-- Footer -->
@@ -63,13 +101,13 @@
     </div>
   </footer>
 
-  <!-- Firebase SDKs -->
+  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 
   <script>
-    // ✅ Firebase Config (same as your other pages)
+    // Firebase Config
     const firebaseConfig = {
       apiKey: "AIzaSyA6-ATQLe_1n-GLzeXelqoO7Rm_WRXGR68",
       authDomain: "readaura.firebaseapp.com",
@@ -80,24 +118,22 @@
       appId: "1:824392534073:web:dfa30e0e40fa540f16a5e8",
       measurementId: "G-G6SWNJQYR5"
     };
-
     firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
     const db = firebase.database();
+    const auth = firebase.auth();
 
-    /* ===============================
-       🔹 NAVIGATION
-    ================================ */
-    function goHome() {
-      window.location.href = "index.html";
-    }
-    function goToTopNovels() {
-      window.location.href = "top-novels.html";
+    // Helpers
+    function getQueryParam(param) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(param);
     }
 
-    /* ===============================
-       🔹 LOAD LOGO
-    ================================ */
+    function goHome() { window.location.href = "index.html"; }
+    function goToAuthorPage() { window.location.href = "become-an-author.html"; }
+    function readNow() { alert("Reading feature coming soon!"); }
+    function addToLibrary() { alert("Added to your library!"); }
+
+    // Load Logo
     function loadLogo() {
       db.ref("site/logo").on("value", snap => {
         const logoUrl = snap.val();
@@ -106,97 +142,59 @@
       });
     }
 
-    /* ===============================
-       🔹 GET BOOK ID FROM URL
-    ================================ */
-    const params = new URLSearchParams(window.location.search);
-    const bookId = params.get("id");
-
-    /* ===============================
-       🔹 LOAD BOOK DETAILS
-    ================================ */
-    function loadBookDetails() {
-      const content = document.getElementById("book-content");
-
+    // Load Book Details
+    function loadBook() {
+      const bookId = getQueryParam("id");
       if (!bookId) {
-        content.innerHTML = "<p class='text-center text-red-500'>Invalid book link.</p>";
+        document.getElementById("book-title").innerText = "Book not found!";
         return;
       }
 
-      db.ref("books/" + bookId).once("value").then(snapshot => {
-        if (!snapshot.exists()) {
-          content.innerHTML = "<p class='text-center text-gray-500'>Book not found.</p>";
+      const bookRef = db.ref("books/" + bookId);
+      bookRef.on("value", snap => {
+        const book = snap.val();
+        if (!book) {
+          document.getElementById("book-title").innerText = "Book not found!";
           return;
         }
 
-        const data = snapshot.val();
-        const cover = data.cover || "https://via.placeholder.com/150?text=No+Cover";
-        const title = data.title || "Untitled Novel";
-        const author = data.author || "Unknown Author";
-        const description = data.description || "No description available.";
-        const views = data.weeklyViews || 0;
-        const chapters = data.chapters || {};
+        document.getElementById("book-title").innerText = book.title || "Untitled";
+        document.getElementById("book-author").innerText = "Author: " + (book.author || "Unknown");
+        document.getElementById("book-genre").innerText = "Genre: " + (book.genre || "N/A");
+        document.getElementById("book-status").innerText = "Status: " + (book.status || "Ongoing");
+        document.getElementById("book-rating").innerHTML = `<i class='fa fa-star'></i> ${book.rating || "4.7"} (${book.ratingsCount || "0"} ratings)`;
+        document.getElementById("book-updated").innerText = "Last updated: " + (book.lastUpdated || "Recently");
+        document.getElementById("book-summary").innerText = book.summary || "No synopsis available.";
+        document.getElementById("book-cover").src = book.cover || "https://via.placeholder.com/200x300";
 
-        // Display the book details
-        content.innerHTML = `
-          <div class="bg-white shadow-lg rounded-lg p-6 md:flex">
-            <img src="${cover}" alt="${title}" class="w-48 h-64 object-cover rounded-lg mx-auto md:mx-0">
-            <div class="md:ml-8 mt-6 md:mt-0 flex-1">
-              <h1 class="text-2xl font-bold mb-2 text-purple-700">${title}</h1>
-              <p class="text-gray-600 mb-2">by <span class="font-medium">${author}</span></p>
-              <p class="text-sm text-gray-500 mb-4">${views} views this week</p>
-              <p class="text-gray-700 leading-relaxed">${description}</p>
-            </div>
-          </div>
-
-          <h2 class="text-xl font-semibold mt-8 mb-3 text-gray-800">📖 Chapters</h2>
-          <div id="chapters-list" class="space-y-2"></div>
-        `;
-
-        // Load chapters
-        const chaptersList = document.getElementById("chapters-list");
-        const chapterKeys = Object.keys(chapters);
-
-        if (chapterKeys.length === 0) {
-          chaptersList.innerHTML = "<p class='text-gray-500'>No chapters available yet.</p>";
-        } else {
-          chapterKeys.forEach(chapterId => {
-            const chapter = chapters[chapterId];
+        const chapterList = document.getElementById("chapter-list");
+        chapterList.innerHTML = "";
+        if (book.chapters) {
+          Object.entries(book.chapters).forEach(([key, chapter]) => {
             const div = document.createElement("div");
-            div.className = "chapter-card p-3 bg-white rounded-lg shadow cursor-pointer";
-            div.innerHTML = `
-              <h3 class="font-semibold text-gray-800">${chapter.title || "Untitled Chapter"}</h3>
-              <p class="text-sm text-gray-500">Words: ${chapter.wordCount || 0}</p>
-            `;
-            div.onclick = () => openChapter(bookId, chapterId);
-            chaptersList.appendChild(div);
+            div.className = "chapter-card border p-3 rounded cursor-pointer";
+            div.innerText = chapter.title || `Chapter ${key}`;
+            div.onclick = () => alert("Open " + chapter.title);
+            chapterList.appendChild(div);
           });
+        } else {
+          chapterList.innerHTML = "<p class='text-gray-500 text-sm'>No chapters found.</p>";
         }
       });
     }
 
-    /* ===============================
-       🔹 OPEN CHAPTER
-    ================================ */
-    function openChapter(bookId, chapterId) {
-      window.location.href = `chapter.html?book=${encodeURIComponent(bookId)}&chapter=${encodeURIComponent(chapterId)}`;
-    }
-
-    /* ===============================
-       🔹 AUTH
-    ================================ */
+    // Auth Toggle
     function toggleAuth() {
       if (auth.currentUser) auth.signOut();
       else auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
     }
-
     auth.onAuthStateChanged(user => {
       document.getElementById("auth-btn").innerText = user ? "Sign Out" : "Sign In";
     });
 
-    // ✅ Initialize
+    // Initialize
     loadLogo();
-    loadBookDetails();
+    loadBook();
   </script>
 </body>
 </html>
