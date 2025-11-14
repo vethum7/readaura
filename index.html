@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ReadAura — Read Online</title>
 
-  <!-- Google AdSense -->
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2883257010372888"
      crossorigin="anonymous"></script>
   
@@ -104,7 +103,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 
   <script>
-    // ✅ Firebase Config
+    // Firebase config
     const firebaseConfig = {
       apiKey: "AIzaSyA6-ATQLe_1n-GLzeXelqoO7Rm_WRXGR68",
       authDomain: "readaura.firebaseapp.com",
@@ -127,12 +126,11 @@
     function loadLogo() {
       db.ref("site/logo").on("value", snap => {
         const logoUrl = snap.val();
-        const logoImg = document.getElementById("site-logo");
-        logoImg.src = logoUrl || "https://i.imgur.com/8WN9Od9.png";
+        document.getElementById("site-logo").src = logoUrl || "https://i.imgur.com/8WN9Od9.png";
       });
     }
 
-    // NAVIGATION
+    // NAVIGATION FUNCTIONS
     function goHome() {
       document.getElementById("book-detail").classList.add("hidden");
       document.getElementById("books-list").classList.remove("hidden");
@@ -144,13 +142,8 @@
       document.getElementById("book-detail").classList.add("hidden");
     }
 
-    function goToAuthorPage() {
-      window.location.href = "become-an-author.html";
-    }
-
-    function showTopNovels() {
-      window.location.href = "top-novels.html";
-    }
+    function goToAuthorPage() { window.location.href = "become-an-author.html"; }
+    function showTopNovels() { window.location.href = "top-novels.html"; }
 
     // LOAD BOOKS
     function loadBooks() {
@@ -163,7 +156,7 @@
           div.className = "book-card cursor-pointer text-center";
 
           const coverImg = book.cover 
-            ? `<img src="${book.cover}" alt="${book.title}" class="book-cover mb-2"/>`
+            ? `<img src="${book.cover}" class="book-cover mb-2"/>`
             : `<div class='book-cover bg-gray-200 flex items-center justify-center text-gray-400'>No Image</div>`;
 
           div.innerHTML = `
@@ -172,23 +165,23 @@
             <p class="text-xs text-gray-600">${book.author || ""}</p>
           `;
 
-          // ✅ FIXED: Redirect to book.html instead of showing inline details
-          div.onclick = () => {
-            window.location.href = \`book.html?id=\${bookSnap.key}\`;
-          };
+          // OLD FUNCTION — shows book inside index.html
+          div.onclick = () => showBookDetail(bookSnap.key, book);
 
           list.appendChild(div);
         });
       });
     }
 
-    // SHOW BOOK DETAIL (kept intact)
+    // SHOW BOOK DETAIL (old version)
     function showBookDetail(id, book) {
       currentBookId = id;
       document.getElementById("books-list").classList.add("hidden");
       document.getElementById("book-detail").classList.remove("hidden");
+
       document.getElementById("book-title").innerText = book.title;
       document.getElementById("book-desc").innerText = book.description || "";
+
       const cover = document.getElementById("book-cover");
       if (book.cover) {
         cover.src = book.cover;
@@ -196,17 +189,19 @@
       } else {
         cover.classList.add("hidden");
       }
+
       updateBookmarkIcon();
       loadChapters(id);
       loadComments(id);
       loadAds();
 
-      // Increment total + weekly views
+      // Count views
       db.ref("books/" + id).once("value").then(snap => {
-        const bookData = snap.val();
-        const totalViews = (bookData.views || 0) + 1;
-        const weeklyViews = (bookData.weeklyViews || 0) + 1;
-        db.ref("books/" + id).update({ views: totalViews, weeklyViews: weeklyViews });
+        const b = snap.val();
+        db.ref("books/" + id).update({
+          views: (b.views || 0) + 1,
+          weeklyViews: (b.weeklyViews || 0) + 1
+        });
       });
     }
 
@@ -226,8 +221,11 @@
       if (!auth.currentUser || !currentBookId) return;
       const uid = auth.currentUser.uid;
       const ref = db.ref("bookmarks/" + uid);
-      if (bookmarks.includes(currentBookId)) bookmarks = bookmarks.filter(b => b !== currentBookId);
+
+      if (bookmarks.includes(currentBookId))
+        bookmarks = bookmarks.filter(b => b !== currentBookId);
       else bookmarks.push(currentBookId);
+
       ref.set(bookmarks);
       updateBookmarkIcon();
     }
@@ -243,23 +241,27 @@
     function updateBookmarkIcon() {
       const icon = document.getElementById("bookmark-icon");
       if (!currentBookId) return;
+
       icon.className = bookmarks.includes(currentBookId)
         ? "fas fa-bookmark text-purple-600"
         : "far fa-bookmark";
     }
 
-    // COMMENTS, CHAPTERS, ADS, SEARCH
+    // COMMENTS
     function postComment() {
       if (!auth.currentUser || !currentBookId) return;
+
       const text = document.getElementById("comment-input").value.trim();
       if (!text) return;
-      const commentRef = db.ref("comments/" + currentBookId).push();
-      commentRef.set({
+
+      const ref = db.ref("comments/" + currentBookId).push();
+      ref.set({
         userId: auth.currentUser.uid,
         userName: auth.currentUser.displayName || "Anonymous",
         text,
         createdAt: Date.now()
       });
+
       document.getElementById("comment-input").value = "";
     }
 
@@ -277,6 +279,7 @@
       });
     }
 
+    // CHAPTERS
     function loadChapters(bookId) {
       const list = document.getElementById("chapters-list");
       db.ref("chapters/" + bookId).on("value", snap => {
@@ -286,14 +289,14 @@
           const div = document.createElement("div");
           div.className = "p-2 border cursor-pointer hover:bg-gray-100";
           div.innerHTML = `<b>${data.title}</b>`;
-          div.onclick = () => {
+          div.onclick = () =>
             window.location.href = `chapter.html?bookId=${bookId}&chapter=${ch.key}`;
-          };
           list.appendChild(div);
         });
       });
     }
 
+    // ADS
     function loadAds() {
       const adsDiv = document.getElementById("ads-space");
       db.ref("ads").on("value", snap => {
@@ -302,35 +305,35 @@
           const data = ad.val();
           const div = document.createElement("div");
           div.className = "border p-2 my-2";
-          div.innerHTML = `<a href="${data.link}" target="_blank"><img src="${data.imageUrl}" class="w-full rounded"/></a>`;
+          div.innerHTML =
+            `<a href="${data.link}" target="_blank">
+              <img src="${data.imageUrl}" class="w-full rounded"/>
+            </a>`;
           adsDiv.appendChild(div);
         });
       });
     }
 
+    // SEARCH
     function searchBooks() {
       const query = document.getElementById("search-input").value.toLowerCase();
-      const allBooks = document.querySelectorAll("#books-list .book-card");
-      allBooks.forEach(card => {
+      const all = document.querySelectorAll("#books-list .book-card");
+      all.forEach(card => {
         const title = card.querySelector("h3").innerText.toLowerCase();
         card.style.display = title.includes(query) ? "" : "none";
       });
     }
 
-    // INITIALIZE EVERYTHING
+    // INITIALIZE
     loadLogo();
     loadBooks();
 
-    // HANDLE DIRECT ACCESS WITH ?id=BOOK_ID
     const params = new URLSearchParams(window.location.search);
     const bookId = params.get("id");
+
     if (bookId) {
       db.ref("books/" + bookId).once("value").then(snap => {
-        if (snap.exists()) {
-          showBookDetail(bookId, snap.val());
-        } else {
-          alert("This book no longer exists.");
-        }
+        if (snap.exists()) showBookDetail(bookId, snap.val());
       });
     }
   </script>
