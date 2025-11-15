@@ -29,6 +29,7 @@
     }
   </style>
 </head>
+
 <body class="bg-gray-50 font-sans text-gray-800">
 
   <!-- Header -->
@@ -60,7 +61,10 @@
   <main class="container mx-auto p-6">
     <div id="book-detail" class="bg-white rounded-lg shadow-lg p-6">
       <div class="flex flex-col md:flex-row">
-        <img id="book-cover" src="https://via.placeholder.com/200x300" alt="Book Cover" class="book-cover w-40 h-56 md:w-52 md:h-72 object-cover rounded-lg mx-auto md:mx-0" />
+        <img id="book-cover" src="https://via.placeholder.com/200x300" 
+             alt="Book Cover" 
+             class="book-cover w-40 h-56 md:w-52 md:h-72 object-cover rounded-lg mx-auto md:mx-0" />
+
         <div class="md:ml-6 mt-4 md:mt-0 flex-1">
           <h1 id="book-title" class="text-2xl font-bold text-gray-900 mb-2">Book Title</h1>
           <p id="book-author" class="text-gray-600 mb-1">Author: Unknown</p>
@@ -68,7 +72,6 @@
           <p id="book-status" class="text-gray-600 mb-1">Status: Ongoing</p>
           <p id="book-updated" class="text-gray-500 text-sm mb-3">Last updated: Just now</p>
 
-          <!-- Removed Add to Library + Removed rating line -->
           <div class="flex space-x-3 mt-3">
             <button class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded shadow-md" onclick="readNow()">📖 Read Now</button>
           </div>
@@ -90,6 +93,13 @@
           <p class="text-gray-500 text-sm">Loading chapters...</p>
         </div>
       </section>
+
+      <!-- 📖 CHAPTER READING SECTION (NEW) -->
+      <section id="chapter-content" class="mt-12 bg-gray-100 p-6 rounded-lg shadow hidden">
+        <h2 id="chapter-title" class="text-2xl font-bold mb-4"></h2>
+        <div id="chapter-text" class="whitespace-pre-line leading-relaxed text-gray-800"></div>
+      </section>
+
     </div>
   </main>
 
@@ -127,9 +137,11 @@
 
     function goHome() { window.location.href = "index.html"; }
     function goToAuthorPage() { window.location.href = "become-an-author.html"; }
+
+    /* ✔ Updated — read chapter 1 inside same page */
     function readNow() {
-      const bookId = getQueryParam("id");
-      window.location.href = `chapter.html?bookId=${bookId}&chapter=1`;
+      loadChapter(1);
+      document.getElementById("chapter-content").scrollIntoView({ behavior: "smooth" });
     }
 
     function loadLogo() {
@@ -146,17 +158,14 @@
         const book = snap.val();
         if (!book) return;
 
-        document.getElementById("book-title").innerText = book.title || "Untitled";
+        document.getElementById("book-title").innerText = book.title;
         document.getElementById("book-author").innerText = "Author: " + (book.author || "Unknown");
         document.getElementById("book-genre").innerText = "Genre: " + (book.genre || "N/A");
         document.getElementById("book-status").innerText = "Status: " + (book.status || "Ongoing");
         document.getElementById("book-updated").innerText = "Last updated: " + (book.lastUpdated || "Recently");
 
-        document.getElementById("book-summary").innerText =
-          book.description || "No description available.";
-
-        document.getElementById("book-cover").src =
-          book.cover || "https://via.placeholder.com/200x300";
+        document.getElementById("book-summary").innerText = book.description || "No description available.";
+        document.getElementById("book-cover").src = book.cover || "https://via.placeholder.com/200x300";
 
         loadChapters(bookId);
       });
@@ -181,10 +190,29 @@
           const div = document.createElement("div");
           div.className = "chapter-card border p-3 rounded cursor-pointer";
           div.innerText = ch.title || `Chapter ${ch.id}`;
-          div.onclick = () =>
-            window.location.href = `chapter.html?bookId=${bookId}&chapter=${ch.id}`;
+          div.onclick = () => loadChapter(ch.id);
           chapterList.appendChild(div);
         });
+      });
+    }
+
+    /* ⭐ NEW — Load chapter inside same page */
+    function loadChapter(chapterId) {
+      const bookId = getQueryParam("id");
+      const ref = db.ref(`chapters/${bookId}/${chapterId}`);
+
+      ref.once("value").then(snap => {
+        if (!snap.exists()) return;
+
+        const chapter = snap.val();
+
+        document.getElementById("chapter-title").innerText = chapter.title || `Chapter ${chapterId}`;
+        document.getElementById("chapter-text").innerText = chapter.text || "No content available.";
+
+        document.getElementById("chapter-content").classList.remove("hidden");
+
+        // smooth scroll
+        document.getElementById("chapter-content").scrollIntoView({ behavior: "smooth" });
       });
     }
 
