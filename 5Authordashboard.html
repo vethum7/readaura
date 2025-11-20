@@ -1,0 +1,2020 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ReadAura - Author Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #8b5cf6;
+            --primary-dark: #7c3aed;
+            --secondary: #ec4899;
+            --accent: #f59e0b;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1f2937;
+            --light: #f9fafb;
+            --gray: #6b7280;
+            --light-gray: #d1d5db;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f8f9fa;
+            color: var(--dark);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Login Screen */
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 100vh;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        }
+
+        .login-box {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .login-logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .login-logo h1 {
+            color: var(--primary);
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .login-logo p {
+            color: var(--gray);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--dark);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--light-gray);
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+        }
+
+        .btn {
+            display: inline-block;
+            font-weight: 500;
+            text-align: center;
+            white-space: nowrap;
+            vertical-align: middle;
+            user-select: none;
+            border: 1px solid transparent;
+            padding: 12px 20px;
+            font-size: 1rem;
+            line-height: 1.5;
+            border-radius: 5px;
+            transition: all 0.15s ease-in-out;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .btn-primary {
+            color: white;
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            border-color: var(--primary-dark);
+        }
+
+        .login-links {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .login-links a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .login-links a:hover {
+            text-decoration: underline;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 260px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            height: 100vh;
+            position: fixed;
+            overflow-y: auto;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+
+        .sidebar-header {
+            padding: 25px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+        }
+
+        .sidebar-header h2 {
+            font-size: 1.5rem;
+            margin-left: 10px;
+        }
+
+        .sidebar-header i {
+            font-size: 1.8rem;
+            color: var(--secondary);
+        }
+
+        .user-info {
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .user-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: var(--secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-right: 15px;
+        }
+
+        .user-details h4 {
+            margin-bottom: 5px;
+        }
+
+        .user-details span {
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+
+        .nav-section {
+            padding: 20px 0;
+        }
+
+        .section-title {
+            padding: 0 20px 10px;
+            font-size: 0.85rem;
+            opacity: 0.7;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .nav-menu {
+            list-style: none;
+        }
+
+        .nav-item {
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+        }
+
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-left: 4px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .nav-item.active {
+            background: rgba(255, 255, 255, 0.15);
+            border-left: 4px solid var(--secondary);
+        }
+
+        .nav-item i {
+            margin-right: 12px;
+            font-size: 1.2rem;
+            width: 20px;
+            text-align: center;
+        }
+
+        .nav-badge {
+            background: var(--secondary);
+            color: white;
+            border-radius: 10px;
+            padding: 2px 8px;
+            font-size: 0.7rem;
+            margin-left: auto;
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            margin-left: 260px;
+            padding: 25px;
+            transition: all 0.3s ease;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        .header h1 {
+            color: var(--dark);
+            font-size: 1.8rem;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+        }
+
+        .search-box {
+            position: relative;
+            margin-right: 20px;
+        }
+
+        .search-box input {
+            padding: 10px 15px 10px 40px;
+            border: 1px solid var(--light-gray);
+            border-radius: 30px;
+            width: 250px;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .search-box input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.2);
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray);
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+        }
+
+        .notification {
+            position: relative;
+            margin-right: 20px;
+            cursor: pointer;
+        }
+
+        .notification i {
+            font-size: 1.3rem;
+            color: var(--gray);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--danger);
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .user-profile img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+            object-fit: cover;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 1.5rem;
+        }
+
+        .stat-icon.stories {
+            background: rgba(139, 92, 246, 0.1);
+            color: var(--primary);
+        }
+
+        .stat-icon.readers {
+            background: rgba(236, 72, 153, 0.1);
+            color: var(--secondary);
+        }
+
+        .stat-icon.earnings {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+        }
+
+        .stat-icon.drafts {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+        }
+
+        .stat-info h3 {
+            font-size: 0.9rem;
+            color: var(--gray);
+            margin-bottom: 5px;
+        }
+
+        .stat-info .value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--dark);
+        }
+
+        /* Content Sections */
+        .content-section {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .section-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--light-gray);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .section-header h2 {
+            font-size: 1.3rem;
+            color: var(--dark);
+        }
+
+        .section-actions a {
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .section-body {
+            padding: 20px;
+        }
+
+        /* Table Styles */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table th {
+            text-align: left;
+            padding: 12px 15px;
+            border-bottom: 1px solid var(--light-gray);
+            color: var(--gray);
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .data-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        .data-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .data-table tr:hover {
+            background: rgba(139, 92, 246, 0.03);
+        }
+
+        .story-cell {
+            display: flex;
+            align-items: center;
+        }
+
+        .story-cover {
+            width: 50px;
+            height: 70px;
+            border-radius: 5px;
+            margin-right: 15px;
+            object-fit: cover;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.8rem;
+            text-align: center;
+            padding: 5px;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .status.published {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+        }
+
+        .status.draft {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+        }
+
+        .status.scheduled {
+            background: rgba(139, 92, 246, 0.1);
+            color: var(--primary);
+        }
+
+        .action-buttons {
+            display: flex;
+        }
+
+        .action-btn {
+            width: 30px;
+            height: 30px;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 5px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .action-btn.edit {
+            background: rgba(139, 92, 246, 0.1);
+            color: var(--primary);
+        }
+
+        .action-btn.delete {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+        }
+
+        .action-btn.view {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+        }
+
+        .action-btn:hover {
+            transform: scale(1.1);
+        }
+
+        /* Writing Progress */
+        .writing-progress {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .progress-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            padding: 20px;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .progress-header h3 {
+            font-size: 1.1rem;
+            color: var(--dark);
+        }
+
+        .progress-bar {
+            height: 10px;
+            background: #ecf0f1;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 5px;
+        }
+
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+
+        /* Comments Section */
+        .comments-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .comment-item {
+            display: flex;
+            padding: 15px;
+            border-radius: 8px;
+            background: #f8f9fa;
+            transition: all 0.2s;
+        }
+
+        .comment-item:hover {
+            background: #e9ecef;
+        }
+
+        .comment-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 15px;
+            background: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .comment-content {
+            flex: 1;
+        }
+
+        .comment-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+
+        .comment-author {
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .comment-date {
+            font-size: 0.8rem;
+            color: var(--gray);
+        }
+
+        .comment-text {
+            color: var(--dark);
+            margin-bottom: 8px;
+        }
+
+        .comment-story {
+            font-size: 0.8rem;
+            color: var(--primary);
+            font-weight: 500;
+        }
+
+        .comment-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .comment-action {
+            color: var(--primary);
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .action-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .action-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .action-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .action-icon.new {
+            background: var(--primary);
+        }
+
+        .action-icon.schedule {
+            background: var(--success);
+        }
+
+        .action-icon.analytics {
+            background: var(--secondary);
+        }
+
+        .action-card h3 {
+            font-size: 1rem;
+            margin-bottom: 5px;
+            color: var(--dark);
+        }
+
+        .action-card p {
+            font-size: 0.8rem;
+            color: var(--gray);
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--dark);
+        }
+
+        .form-input, .form-textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--light-gray);
+            border-radius: 0.375rem;
+            transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+        }
+
+        .form-input:focus, .form-textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+        }
+
+        .form-textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: var(--gray);
+            font-size: 0.9rem;
+            border-top: 1px solid var(--light-gray);
+            margin-top: 30px;
+        }
+
+        /* Hidden class for toggling */
+        .hidden {
+            display: none;
+        }
+
+        /* Chapter Management Styles */
+        .chapter-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .chapter-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border-radius: 8px;
+            background: #f8f9fa;
+            transition: all 0.2s;
+        }
+
+        .chapter-item:hover {
+            background: #e9ecef;
+        }
+
+        .chapter-info {
+            flex: 1;
+        }
+
+        .chapter-title {
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 5px;
+        }
+
+        .chapter-meta {
+            display: flex;
+            gap: 15px;
+            font-size: 0.8rem;
+            color: var(--gray);
+        }
+
+        .chapter-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .chapter-action-btn {
+            padding: 6px 12px;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .chapter-action-btn.edit {
+            background: rgba(139, 92, 246, 0.1);
+            color: var(--primary);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+        }
+
+        .chapter-action-btn.delete {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .chapter-action-btn.publish {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .chapter-action-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--gray);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: var(--light-gray);
+        }
+
+        .empty-state p {
+            margin-bottom: 15px;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 992px) {
+            .sidebar {
+                width: 70px;
+                overflow: visible;
+            }
+
+            .sidebar-header h2, .user-details, .section-title, .nav-item span {
+                display: none;
+            }
+
+            .nav-item {
+                justify-content: center;
+                padding: 15px;
+            }
+
+            .nav-item i {
+                margin-right: 0;
+            }
+
+            .main-content {
+                margin-left: 70px;
+            }
+
+            .search-box input {
+                width: 180px;
+            }
+
+            .writing-progress {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .search-box {
+                display: none;
+            }
+
+            .quick-actions {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .chapter-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .chapter-actions {
+                margin-top: 10px;
+                width: 100%;
+                justify-content: flex-end;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .main-content {
+                padding: 15px;
+            }
+
+            .quick-actions {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Screen -->
+    <div id="login-screen" class="login-container">
+        <div class="login-box">
+            <div class="login-logo">
+                <h1>ReadAura</h1>
+                <p>Author Dashboard - Sign In</p>
+            </div>
+            <form id="login-form">
+                <div class="form-group">
+                    <label class="form-label" for="email">Email</label>
+                    <input type="email" id="email" class="form-input" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="password">Password</label>
+                    <input type="password" id="password" class="form-input" placeholder="Enter your password" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Sign In</button>
+            </form>
+            <div class="login-links">
+                <p>Don't have an account? <a href="#" id="show-register">Sign Up</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Registration Screen -->
+    <div id="register-screen" class="login-container hidden">
+        <div class="login-box">
+            <div class="login-logo">
+                <h1>ReadAura</h1>
+                <p>Create Author Account</p>
+            </div>
+            <form id="register-form">
+                <div class="form-group">
+                    <label class="form-label" for="reg-name">Full Name</label>
+                    <input type="text" id="reg-name" class="form-input" placeholder="Enter your full name" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="reg-email">Email</label>
+                    <input type="email" id="reg-email" class="form-input" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="reg-password">Password</label>
+                    <input type="password" id="reg-password" class="form-input" placeholder="Create a password" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="reg-confirm">Confirm Password</label>
+                    <input type="password" id="reg-confirm" class="form-input" placeholder="Confirm your password" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Create Account</button>
+            </form>
+            <div class="login-links">
+                <p>Already have an account? <a href="#" id="show-login">Sign In</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Author Dashboard (Initially Hidden) -->
+    <div id="author-dashboard" class="hidden">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <i class="fas fa-pen-nib"></i>
+                <h2>ReadAura Author</h2>
+            </div>
+
+            <div class="user-info">
+                <div class="user-avatar" id="user-avatar">EJ</div>
+                <div class="user-details">
+                    <h4 id="user-name">Emma Johnson</h4>
+                    <span>Author</span>
+                </div>
+            </div>
+
+            <div class="nav-section">
+                <div class="section-title">Writing Workspace</div>
+                <ul class="nav-menu">
+                    <li class="nav-item active" onclick="showSection('dashboard')">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span>Author Dashboard</span>
+                    </li>
+                    <li class="nav-item" onclick="showSection('create-story')">
+                        <i class="fas fa-plus-circle"></i>
+                        <span>Create New Story</span>
+                    </li>
+                    <li class="nav-item" onclick="showSection('my-stories')">
+                        <i class="fas fa-book-open"></i>
+                        <span>My Stories</span>
+                        <span class="nav-badge" id="stories-count">0</span>
+                    </li>
+                    <li class="nav-item" onclick="showSection('chapter-drafts')">
+                        <i class="fas fa-edit"></i>
+                        <span>Chapter Drafts</span>
+                        <span class="nav-badge" id="drafts-count">0</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="nav-section">
+                <div class="section-title">Content Management</div>
+                <ul class="nav-menu">
+                    <li class="nav-item" onclick="showSection('publishing-schedule')">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>Publishing Schedule</span>
+                    </li>
+                    <li class="nav-item" onclick="showSection('story-settings')">
+                        <i class="fas fa-sliders-h"></i>
+                        <span>Story Settings</span>
+                    </li>
+                    <li class="nav-item" onclick="showSection('tags-genres')">
+                        <i class="fas fa-tags"></i>
+                        <span>Tags & Genres</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="nav-section">
+                <div class="section-title">Reader Engagement</div>
+                <ul class="nav-menu">
+                    <li class="nav-item" onclick="showSection('reader-comments')">
+                        <i class="fas fa-comments"></i>
+                        <span>Reader Comments</span>
+                        <span class="nav-badge" id="comments-count">0</span>
+                    </li>
+                    <li class="nav-item" onclick="showSection('story-analytics')">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Story Analytics</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="nav-section">
+                <div class="section-title">Resources</div>
+                <ul class="nav-menu">
+                    <li class="nav-item" onclick="showSection('writing-guide')">
+                        <i class="fas fa-question-circle"></i>
+                        <span>Writing Guide</span>
+                    </li>
+                    <li class="nav-item" onclick="showSection('author-community')">
+                        <i class="fas fa-users"></i>
+                        <span>Author Community</span>
+                    </li>
+                    <li class="nav-item" onclick="showSection('author-support')">
+                        <i class="fas fa-headset"></i>
+                        <span>Author Support</span>
+                    </li>
+                    <li class="nav-item" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Logout</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="header">
+                <h1 id="panel-title">Author Dashboard</h1>
+                <div class="header-actions">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Search stories, chapters...">
+                    </div>
+                    <div class="user-menu">
+                        <div class="notification">
+                            <i class="fas fa-bell"></i>
+                            <span class="notification-badge">0</span>
+                        </div>
+                        <div class="user-profile">
+                            <img src="https://i.pravatar.cc/150?img=32" alt="Author" id="user-profile-img">
+                            <span id="header-user-name">Emma Johnson</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dashboard Section -->
+            <section id="dashboard" class="content-section">
+                <div class="section-header">
+                    <h2>Dashboard Overview</h2>
+                </div>
+                <div class="section-body">
+                    <!-- Stats Grid -->
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon stories">
+                                <i class="fas fa-book"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>Active Stories</h3>
+                                <div class="value" id="active-stories-count">0</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon readers">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>Total Readers</h3>
+                                <div class="value" id="total-readers-count">0</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon drafts">
+                                <i class="fas fa-file-alt"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>Chapter Drafts</h3>
+                                <div class="value" id="chapter-drafts-count">0</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="content-section">
+                        <div class="section-header">
+                            <h2>Quick Actions</h2>
+                        </div>
+                        <div class="section-body">
+                            <div class="quick-actions">
+                                <div class="action-card" onclick="showSection('create-story')">
+                                    <div class="action-icon new">
+                                        <i class="fas fa-plus"></i>
+                                    </div>
+                                    <h3>New Story</h3>
+                                    <p>Start a brand new story</p>
+                                </div>
+                                <div class="action-card" onclick="showSection('chapter-drafts')">
+                                    <div class="action-icon new">
+                                        <i class="fas fa-edit"></i>
+                                    </div>
+                                    <h3>New Chapter</h3>
+                                    <p>Continue your latest story</p>
+                                </div>
+                                <div class="action-card" onclick="showSection('publishing-schedule')">
+                                    <div class="action-icon schedule">
+                                        <i class="fas fa-calendar-plus"></i>
+                                    </div>
+                                    <h3>Schedule</h3>
+                                    <p>Plan your publishing</p>
+                                </div>
+                                <div class="action-card" onclick="showSection('story-analytics')">
+                                    <div class="action-icon analytics">
+                                        <i class="fas fa-chart-bar"></i>
+                                    </div>
+                                    <h3>Analytics</h3>
+                                    <p>View story performance</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Writing Progress -->
+                    <div class="content-section">
+                        <div class="section-header">
+                            <h2>Writing Progress</h2>
+                            <div class="section-actions">
+                                <a href="#" onclick="showSection('my-stories')">View All <i class="fas fa-arrow-right"></i></a>
+                            </div>
+                        </div>
+                        <div class="section-body">
+                            <div id="writing-progress-container">
+                                <p class="text-gray-500">No active stories yet. <a href="#" onclick="showSection('create-story')" class="text-purple-600">Create your first story</a> to start tracking progress.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Comments -->
+                    <div class="content-section">
+                        <div class="section-header">
+                            <h2>Recent Comments</h2>
+                            <div class="section-actions">
+                                <a href="#" onclick="showSection('reader-comments')">View All <i class="fas fa-arrow-right"></i></a>
+                            </div>
+                        </div>
+                        <div class="section-body">
+                            <div id="recent-comments-container">
+                                <p class="text-gray-500">No comments yet. When readers comment on your stories, they'll appear here.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Create Story Section -->
+            <section id="create-story" class="content-section" style="display: none;">
+                <div class="section-header">
+                    <h2>Create New Story</h2>
+                </div>
+                <div class="section-body">
+                    <form id="create-story-form">
+                        <div class="form-group">
+                            <label class="form-label" for="story-title">Story Title</label>
+                            <input type="text" id="story-title" class="form-input" placeholder="Enter story title" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="story-description">Description</label>
+                            <textarea id="story-description" class="form-textarea" placeholder="Enter story description"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="story-genre">Genre</label>
+                            <select id="story-genre" class="form-input">
+                                <option value="">Select Genre</option>
+                                <option value="fantasy">Fantasy</option>
+                                <option value="romance">Romance</option>
+                                <option value="sci-fi">Science Fiction</option>
+                                <option value="mystery">Mystery</option>
+                                <option value="thriller">Thriller</option>
+                                <option value="horror">Horror</option>
+                                <option value="adventure">Adventure</option>
+                                <option value="drama">Drama</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="story-cover">Cover Image URL (Optional)</label>
+                            <input type="text" id="story-cover" class="form-input" placeholder="Enter cover image URL">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Create Story</button>
+                    </form>
+                </div>
+            </section>
+
+            <!-- My Stories Section -->
+            <section id="my-stories" class="content-section" style="display: none;">
+                <div class="section-header">
+                    <h2>My Stories</h2>
+                </div>
+                <div class="section-body">
+                    <div id="my-stories-list">
+                        <p class="text-gray-500">You haven't created any stories yet. <a href="#" onclick="showSection('create-story')" class="text-purple-600">Create your first story</a>.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Chapter Drafts Section -->
+            <section id="chapter-drafts" class="content-section" style="display: none;">
+                <div class="section-header">
+                    <h2>Chapter Drafts</h2>
+                </div>
+                <div class="section-body">
+                    <div id="chapter-drafts-container">
+                        <p class="text-gray-500">No chapter drafts yet. <a href="#" onclick="showSection('my-stories')" class="text-purple-600">Select a story</a> to start writing chapters.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Chapter Management Section -->
+            <section id="chapter-management" class="content-section" style="display: none;">
+                <div class="section-header">
+                    <h2 id="chapter-management-title">Chapter Management</h2>
+                    <div class="section-actions">
+                        <button class="btn btn-primary" onclick="showAddChapterForm()">Add New Chapter</button>
+                    </div>
+                </div>
+                <div class="section-body">
+                    <div id="chapter-management-container">
+                        <div class="empty-state">
+                            <i class="fas fa-book-open"></i>
+                            <p>Select a story to manage its chapters</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Add/Edit Chapter Form -->
+            <section id="chapter-form" class="content-section" style="display: none;">
+                <div class="section-header">
+                    <h2 id="chapter-form-title">Add New Chapter</h2>
+                </div>
+                <div class="section-body">
+                    <form id="chapter-form-element">
+                        <input type="hidden" id="chapter-id">
+                        <input type="hidden" id="chapter-story-id">
+                        <div class="form-group">
+                            <label class="form-label" for="chapter-title">Chapter Title</label>
+                            <input type="text" id="chapter-title" class="form-input" placeholder="Enter chapter title" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="chapter-content">Chapter Content</label>
+                            <textarea id="chapter-content" class="form-textarea" placeholder="Write your chapter content here..." rows="15"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="chapter-status">Status</label>
+                            <select id="chapter-status" class="form-input">
+                                <option value="draft">Draft</option>
+                                <option value="published">Published</option>
+                                <option value="scheduled">Scheduled</option>
+                            </select>
+                        </div>
+                        <div class="form-group" id="schedule-date-group" style="display: none;">
+                            <label class="form-label" for="chapter-schedule-date">Schedule Date</label>
+                            <input type="datetime-local" id="chapter-schedule-date" class="form-input">
+                        </div>
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary">Save Chapter</button>
+                            <button type="button" class="btn" onclick="cancelChapterForm()" style="margin-left: 10px; background: var(--light-gray);">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <!-- Reader Comments Section -->
+            <section id="reader-comments" class="content-section" style="display: none;">
+                <div class="section-header">
+                    <h2>Reader Comments</h2>
+                </div>
+                <div class="section-body">
+                    <div id="reader-comments-container">
+                        <p class="text-gray-500">No comments from readers yet.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Story Analytics Section -->
+            <section id="story-analytics" class="content-section" style="display: none;">
+                <div class="section-header">
+                    <h2>Story Analytics</h2>
+                </div>
+                <div class="section-body">
+                    <div id="story-analytics-container">
+                        <p class="text-gray-500">Analytics data will appear here once your stories get readers.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Other sections would go here with similar structure -->
+
+            <div class="footer">
+                <p>© 2023 ReadAura Author Dashboard. All rights reserved.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyA6-ATQLe_1n-GLzeXelqoO7Rm_WRXGR68",
+            authDomain: "readaura.firebaseapp.com",
+            databaseURL: "https://readaura-default-rtdb.firebaseio.com",
+            projectId: "readaura",
+            storageBucket: "readaura.appspot.com",
+            messagingSenderId: "824392534073",
+            appId: "1:824392534073:web:dfa30e0e40fa540f16a5e8",
+            measurementId: "G-G6SWNJQYR5"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        const auth = firebase.auth();
+
+        // DOM Elements
+        const loginScreen = document.getElementById('login-screen');
+        const registerScreen = document.getElementById('register-screen');
+        const authorDashboard = document.getElementById('author-dashboard');
+        const loginForm = document.getElementById('login-form');
+        const registerForm = document.getElementById('register-form');
+        const showRegister = document.getElementById('show-register');
+        const showLogin = document.getElementById('show-login');
+        const createStoryForm = document.getElementById('create-story-form');
+        const chapterForm = document.getElementById('chapter-form-element');
+
+        // User data
+        let currentUser = null;
+        let userStories = [];
+        let currentStoryChapters = [];
+        let currentStoryId = null;
+
+        // Check if user is already logged in
+        firebase.auth().onAuthStateChanged((user) => {
+            if (user) {
+                // User is signed in
+                currentUser = user;
+                showAuthorDashboard(user);
+                loadUserStories();
+            } else {
+                // User is signed out
+                showLoginScreen();
+            }
+        });
+
+        // Show login screen
+        function showLoginScreen() {
+            loginScreen.classList.remove('hidden');
+            registerScreen.classList.add('hidden');
+            authorDashboard.classList.add('hidden');
+        }
+
+        // Show register screen
+        function showRegisterScreen() {
+            loginScreen.classList.add('hidden');
+            registerScreen.classList.remove('hidden');
+            authorDashboard.classList.add('hidden');
+        }
+
+        // Show author dashboard
+        function showAuthorDashboard(user) {
+            loginScreen.classList.add('hidden');
+            registerScreen.classList.add('hidden');
+            authorDashboard.classList.remove('hidden');
+            
+            // Update user info in dashboard
+            document.getElementById('user-name').textContent = user.displayName || user.email;
+            document.getElementById('header-user-name').textContent = user.displayName || user.email;
+            document.getElementById('user-avatar').textContent = user.displayName ? user.displayName.charAt(0).toUpperCase() : user.email.charAt(0).toUpperCase();
+        }
+
+        // Login form submission
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            auth.signInWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    // Signed in
+                    const user = userCredential.user;
+                    console.log('User logged in:', user);
+                })
+                .catch((error) => {
+                    alert('Login failed: ' + error.message);
+                });
+        });
+
+        // Register form submission
+        registerForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const name = document.getElementById('reg-name').value;
+            const email = document.getElementById('reg-email').value;
+            const password = document.getElementById('reg-password').value;
+            const confirm = document.getElementById('reg-confirm').value;
+            
+            if (password !== confirm) {
+                alert('Passwords do not match');
+                return;
+            }
+            
+            auth.createUserWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    // Signed up
+                    const user = userCredential.user;
+                    
+                    // Update profile with display name
+                    return user.updateProfile({
+                        displayName: name
+                    });
+                })
+                .then(() => {
+                    // Save user to database
+                    const user = auth.currentUser;
+                    return db.ref('users/' + user.uid).set({
+                        name: name,
+                        email: email,
+                        role: 'author',
+                        createdAt: new Date().toISOString()
+                    });
+                })
+                .then(() => {
+                    console.log('User registered and saved to database');
+                })
+                .catch((error) => {
+                    alert('Registration failed: ' + error.message);
+                });
+        });
+
+        // Create story form submission
+        createStoryForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            if (!currentUser) {
+                alert('Please log in to create a story');
+                return;
+            }
+
+            const title = document.getElementById('story-title').value;
+            const description = document.getElementById('story-description').value;
+            const genre = document.getElementById('story-genre').value;
+            const cover = document.getElementById('story-cover').value;
+
+            if (!title) {
+                alert('Story title is required');
+                return;
+            }
+
+            // Generate a unique ID for the story
+            const storyId = 'story_' + Date.now();
+
+            // Save story to database
+            db.ref('books/' + storyId).set({
+                title: title,
+                description: description,
+                genre: genre,
+                cover: cover,
+                author: currentUser.displayName || currentUser.email,
+                authorId: currentUser.uid,
+                createdAt: new Date().toISOString(),
+                status: 'draft',
+                views: 0
+            }).then(() => {
+                alert('Story created successfully!');
+                createStoryForm.reset();
+                showSection('my-stories');
+                loadUserStories();
+            }).catch((error) => {
+                alert('Error creating story: ' + error.message);
+            });
+        });
+
+        // Load user stories
+        function loadUserStories() {
+            if (!currentUser) return;
+
+            db.ref('books').orderByChild('authorId').equalTo(currentUser.uid).on('value', (snapshot) => {
+                userStories = [];
+                snapshot.forEach((childSnapshot) => {
+                    userStories.push({
+                        id: childSnapshot.key,
+                        ...childSnapshot.val()
+                    });
+                });
+
+                updateStoriesCount();
+                displayUserStories();
+                updateWritingProgress();
+            });
+        }
+
+        // Update stories count in stats
+        function updateStoriesCount() {
+            document.getElementById('active-stories-count').textContent = userStories.length;
+            document.getElementById('stories-count').textContent = userStories.length;
+        }
+
+        // Display user stories in My Stories section
+        function displayUserStories() {
+            const storiesList = document.getElementById('my-stories-list');
+            
+            if (userStories.length === 0) {
+                storiesList.innerHTML = '<p class="text-gray-500">You haven\'t created any stories yet. <a href="#" onclick="showSection(\'create-story\')" class="text-purple-600">Create your first story</a>.</p>';
+                return;
+            }
+
+            let html = '';
+            userStories.forEach(story => {
+                html += `
+                    <div class="border rounded-lg p-4 mb-4">
+                        <div class="flex items-start">
+                            ${story.cover ? `<img src="${story.cover}" class="w-16 h-24 object-cover rounded mr-4">` : 
+                            `<div class="w-16 h-24 bg-gray-200 rounded flex items-center justify-center text-gray-500 mr-4"><i class="fas fa-book"></i></div>`}
+                            <div class="flex-1">
+                                <h3 class="font-bold text-lg">${story.title}</h3>
+                                <p class="text-gray-600">${story.description || 'No description'}</p>
+                                <div class="mt-2 flex items-center text-sm text-gray-500">
+                                    <span class="mr-3">Genre: ${story.genre || 'Not specified'}</span>
+                                    <span class="mr-3">Status: ${story.status || 'Draft'}</span>
+                                    <span>Views: ${story.views || 0}</span>
+                                </div>
+                                <div class="mt-3">
+                                    <button onclick="editStory('${story.id}')" class="action-btn edit mr-2"><i class="fas fa-edit"></i></button>
+                                    <button onclick="deleteStory('${story.id}')" class="action-btn delete"><i class="fas fa-trash"></i></button>
+                                    <button onclick="manageChapters('${story.id}')" class="ml-2 bg-purple-600 text-white px-3 py-1 rounded text-sm">Manage Chapters</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            storiesList.innerHTML = html;
+        }
+
+        // Update writing progress section
+        function updateWritingProgress() {
+            const progressContainer = document.getElementById('writing-progress-container');
+            
+            if (userStories.length === 0) {
+                progressContainer.innerHTML = '<p class="text-gray-500">No active stories yet. <a href="#" onclick="showSection(\'create-story\')" class="text-purple-600">Create your first story</a> to start tracking progress.</p>';
+                return;
+            }
+
+            let html = '<div class="writing-progress">';
+            userStories.forEach(story => {
+                // For demo purposes, we'll show random progress
+                const progress = Math.floor(Math.random() * 100);
+                
+                html += `
+                    <div class="progress-card">
+                        <div class="progress-header">
+                            <h3>${story.title}</h3>
+                            <span class="status ${story.status === 'published' ? 'published' : 'draft'}">${story.status || 'Draft'}</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${progress}%; background: ${story.status === 'published' ? '#10b981' : '#f59e0b'};"></div>
+                        </div>
+                        <div class="progress-info">
+                            <span>Progress</span>
+                            <span>${progress}% complete</span>
+                        </div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            
+            progressContainer.innerHTML = html;
+        }
+
+        // Edit story function
+        function editStory(storyId) {
+            const story = userStories.find(s => s.id === storyId);
+            if (story) {
+                document.getElementById('story-title').value = story.title;
+                document.getElementById('story-description').value = story.description || '';
+                document.getElementById('story-genre').value = story.genre || '';
+                document.getElementById('story-cover').value = story.cover || '';
+                
+                // Change form to update mode
+                createStoryForm.onsubmit = function(e) {
+                    e.preventDefault();
+                    updateStory(storyId);
+                };
+                
+                // Change button text
+                const submitButton = createStoryForm.querySelector('button[type="submit"]');
+                submitButton.textContent = 'Update Story';
+                
+                showSection('create-story');
+            }
+        }
+
+        // Update story function
+        function updateStory(storyId) {
+            const title = document.getElementById('story-title').value;
+            const description = document.getElementById('story-description').value;
+            const genre = document.getElementById('story-genre').value;
+            const cover = document.getElementById('story-cover').value;
+
+            if (!title) {
+                alert('Story title is required');
+                return;
+            }
+
+            db.ref('books/' + storyId).update({
+                title: title,
+                description: description,
+                genre: genre,
+                cover: cover,
+                updatedAt: new Date().toISOString()
+            }).then(() => {
+                alert('Story updated successfully!');
+                createStoryForm.reset();
+                
+                // Reset form to create mode
+                createStoryForm.onsubmit = function(e) {
+                    e.preventDefault();
+                    createStoryForm.dispatchEvent(new Event('submit'));
+                };
+                
+                // Reset button text
+                const submitButton = createStoryForm.querySelector('button[type="submit"]');
+                submitButton.textContent = 'Create Story';
+                
+                showSection('my-stories');
+                loadUserStories();
+            }).catch((error) => {
+                alert('Error updating story: ' + error.message);
+            });
+        }
+
+        // Delete story function
+        function deleteStory(storyId) {
+            if (confirm('Are you sure you want to delete this story? This action cannot be undone.')) {
+                db.ref('books/' + storyId).remove()
+                    .then(() => {
+                        alert('Story deleted successfully!');
+                        loadUserStories();
+                    })
+                    .catch((error) => {
+                        alert('Error deleting story: ' + error.message);
+                    });
+            }
+        }
+
+        // Manage chapters function
+        function manageChapters(storyId) {
+            currentStoryId = storyId;
+            const story = userStories.find(s => s.id === storyId);
+            
+            if (story) {
+                document.getElementById('chapter-management-title').textContent = `Chapter Management: ${story.title}`;
+                loadStoryChapters(storyId);
+                showSection('chapter-management');
+            }
+        }
+
+        // Load chapters for a specific story - UPDATED STRUCTURE
+        function loadStoryChapters(storyId) {
+            db.ref(`chapters/${storyId}`).on('value', (snapshot) => {
+                currentStoryChapters = [];
+                snapshot.forEach((childSnapshot) => {
+                    currentStoryChapters.push({
+                        id: childSnapshot.key, // This will be the chapter number
+                        bookId: storyId,
+                        number: parseInt(childSnapshot.key),
+                        ...childSnapshot.val()
+                    });
+                });
+
+                displayStoryChapters();
+                updateChapterDraftsCount();
+            });
+        }
+
+        // Display chapters in the chapter management section - UPDATED
+        function displayStoryChapters() {
+            const container = document.getElementById('chapter-management-container');
+            
+            if (currentStoryChapters.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-file-alt"></i>
+                        <p>No chapters yet for this story</p>
+                        <button class="btn btn-primary mt-3" onclick="showAddChapterForm()">Add First Chapter</button>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '<div class="chapter-list">';
+            
+            // Sort chapters by number
+            currentStoryChapters.sort((a, b) => (a.number || 0) - (b.number || 0));
+            
+            currentStoryChapters.forEach(chapter => {
+                html += `
+                    <div class="chapter-item">
+                        <div class="chapter-info">
+                            <div class="chapter-title">Chapter ${chapter.number}: ${chapter.title}</div>
+                            <div class="chapter-meta">
+                                <span>Status: <span class="status ${chapter.status}">${chapter.status}</span></span>
+                                <span>Words: ${chapter.content ? chapter.content.split(' ').length : 0}</span>
+                                <span>Created: ${new Date(chapter.createdAt).toLocaleDateString()}</span>
+                            </div>
+                        </div>
+                        <div class="chapter-actions">
+                            <button class="chapter-action-btn edit" onclick="editChapter('${chapter.number}', '${chapter.bookId}')">Edit</button>
+                            <button class="chapter-action-btn delete" onclick="deleteChapter('${chapter.number}', '${chapter.bookId}')">Delete</button>
+                            ${chapter.status !== 'published' ? `<button class="chapter-action-btn publish" onclick="publishChapter('${chapter.number}', '${chapter.bookId}')">Publish</button>` : ''}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        // Show add chapter form
+        function showAddChapterForm() {
+            document.getElementById('chapter-form-title').textContent = 'Add New Chapter';
+            document.getElementById('chapter-id').value = '';
+            document.getElementById('chapter-story-id').value = currentStoryId;
+            document.getElementById('chapter-title').value = '';
+            document.getElementById('chapter-content').value = '';
+            document.getElementById('chapter-status').value = 'draft';
+            document.getElementById('chapter-schedule-date').value = '';
+            
+            // Reset form submission
+            chapterForm.onsubmit = function(e) {
+                e.preventDefault();
+                saveChapter();
+            };
+            
+            showSection('chapter-form');
+        }
+
+        // Show edit chapter form - UPDATED
+        function editChapter(chapterNumber, bookId) {
+            const chapter = currentStoryChapters.find(c => c.number == chapterNumber && c.bookId === bookId);
+            
+            if (chapter) {
+                document.getElementById('chapter-form-title').textContent = 'Edit Chapter';
+                document.getElementById('chapter-id').value = chapter.number;
+                document.getElementById('chapter-story-id').value = chapter.bookId;
+                document.getElementById('chapter-title').value = chapter.title;
+                document.getElementById('chapter-content').value = chapter.content || '';
+                document.getElementById('chapter-status').value = chapter.status || 'draft';
+                document.getElementById('chapter-schedule-date').value = chapter.scheduledDate || '';
+                
+                // Update form submission
+                chapterForm.onsubmit = function(e) {
+                    e.preventDefault();
+                    saveChapter();
+                };
+                
+                showSection('chapter-form');
+            }
+        }
+
+        // Save chapter function - UPDATED STRUCTURE
+        function saveChapter() {
+            const chapterId = document.getElementById('chapter-id').value;
+            const storyId = document.getElementById('chapter-story-id').value;
+            const title = document.getElementById('chapter-title').value;
+            const content = document.getElementById('chapter-content').value;
+            const status = document.getElementById('chapter-status').value;
+            const scheduledDate = document.getElementById('chapter-schedule-date').value;
+
+            if (!title) {
+                alert('Chapter title is required');
+                return;
+            }
+
+            if (!content) {
+                alert('Chapter content is required');
+                return;
+            }
+
+            // Get the next chapter number for this story
+            let chapterNumber = 1;
+            if (currentStoryChapters.length > 0) {
+                // Find the highest chapter number and increment
+                const maxChapter = Math.max(...currentStoryChapters.map(ch => ch.number || 0));
+                chapterNumber = maxChapter + 1;
+            }
+
+            const chapterData = {
+                title: title,
+                content: content,
+                status: status,
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString(),
+                number: chapterNumber
+            };
+
+            // Add scheduled date if status is scheduled
+            if (status === 'scheduled' && scheduledDate) {
+                chapterData.scheduledDate = scheduledDate;
+            }
+
+            let savePromise;
+            
+            if (chapterId) {
+                // Update existing chapter
+                savePromise = db.ref(`chapters/${storyId}/${chapterId}`).update(chapterData);
+            } else {
+                // Create new chapter using admin panel structure
+                savePromise = db.ref(`chapters/${storyId}/${chapterNumber}`).set(chapterData);
+            }
+
+            savePromise.then(() => {
+                alert(chapterId ? 'Chapter updated successfully!' : 'Chapter created successfully!');
+                cancelChapterForm();
+                loadStoryChapters(storyId);
+            }).catch((error) => {
+                alert('Error saving chapter: ' + error.message);
+            });
+        }
+
+        // Delete chapter function - UPDATED
+        function deleteChapter(chapterNumber, bookId) {
+            if (confirm('Are you sure you want to delete this chapter? This action cannot be undone.')) {
+                db.ref(`chapters/${bookId}/${chapterNumber}`).remove()
+                    .then(() => {
+                        alert('Chapter deleted successfully!');
+                        loadStoryChapters(currentStoryId);
+                    })
+                    .catch((error) => {
+                        alert('Error deleting chapter: ' + error.message);
+                    });
+            }
+        }
+
+        // Publish chapter function - UPDATED
+        function publishChapter(chapterNumber, bookId) {
+            db.ref(`chapters/${bookId}/${chapterNumber}`).update({
+                status: 'published',
+                publishedAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString()
+            }).then(() => {
+                alert('Chapter published successfully!');
+                loadStoryChapters(currentStoryId);
+            }).catch((error) => {
+                alert('Error publishing chapter: ' + error.message);
+            });
+        }
+
+        // Cancel chapter form
+        function cancelChapterForm() {
+            showSection('chapter-management');
+        }
+
+        // Update chapter drafts count
+        function updateChapterDraftsCount() {
+            const draftCount = currentStoryChapters.filter(chapter => chapter.status === 'draft').length;
+            document.getElementById('chapter-drafts-count').textContent = draftCount;
+            document.getElementById('drafts-count').textContent = draftCount;
+        }
+
+        // Logout function
+        function logout() {
+            auth.signOut().then(() => {
+                console.log('User signed out');
+            }).catch((error) => {
+                console.error('Sign out error:', error);
+            });
+        }
+
+        // Toggle between login and register screens
+        showRegister.addEventListener('click', (e) => {
+            e.preventDefault();
+            showRegisterScreen();
+        });
+
+        showLogin.addEventListener('click', (e) => {
+            e.preventDefault();
+            showLoginScreen();
+        });
+
+        // Show/hide sections in author dashboard
+        function showSection(id) {
+            // Hide all sections
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.style.display = 'none';
+            });
+            
+            // Show selected section
+            document.getElementById(id).style.display = 'block';
+            
+            // Update active nav item
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Update panel title
+            const titles = {
+                'dashboard': 'Author Dashboard',
+                'create-story': 'Create New Story',
+                'my-stories': 'My Stories',
+                'chapter-drafts': 'Chapter Drafts',
+                'chapter-management': 'Chapter Management',
+                'chapter-form': 'Chapter Form',
+                'publishing-schedule': 'Publishing Schedule',
+                'story-settings': 'Story Settings',
+                'tags-genres': 'Tags & Genres',
+                'reader-comments': 'Reader Comments',
+                'story-analytics': 'Story Analytics',
+                'writing-guide': 'Writing Guide',
+                'author-community': 'Author Community',
+                'author-support': 'Author Support'
+            };
+            
+            document.getElementById('panel-title').textContent = titles[id] || 'Author Dashboard';
+        }
+
+        // Quick action cards functionality
+        document.querySelectorAll('.action-card').forEach(card => {
+            card.addEventListener('click', function() {
+                const title = this.querySelector('h3').textContent;
+                console.log(`Opening: ${title}`);
+            });
+        });
+
+        // Show/hide schedule date based on status selection
+        document.getElementById('chapter-status').addEventListener('change', function() {
+            const scheduleDateGroup = document.getElementById('schedule-date-group');
+            if (this.value === 'scheduled') {
+                scheduleDateGroup.style.display = 'block';
+            } else {
+                scheduleDateGroup.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
