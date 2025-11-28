@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ReadAura — Read Online</title>
 
+  <!-- Favicon Added -->
+  <link rel="icon" type="image/png" href="https://i.imgur.com/8WN9Od9.png">
+
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2883257010372888"
      crossorigin="anonymous"></script>
   
@@ -166,7 +169,6 @@
             <p class="text-xs text-gray-600">${book.author || ""}</p>
           `;
 
-          // ✅ FIX APPLIED — redirect to book.html
           div.onclick = () => window.location.href = `book.html?id=${bookSnap.key}`;
 
           list.appendChild(div);
@@ -174,7 +176,6 @@
       });
     }
 
-    // OLD showBookDetail kept 100% intact
     function showBookDetail(id, book) {
       currentBookId = id;
       document.getElementById("books-list").classList.add("hidden");
@@ -193,7 +194,6 @@
       loadComments(id);
       loadAds();
 
-      // Count views
       db.ref("books/" + id).once("value").then(snap => {
         const bookData = snap.val();
         const totalViews = (bookData.views || 0) + 1;
@@ -202,7 +202,6 @@
       });
     }
 
-    // AUTH
     function toggleAuth() {
       if (auth.currentUser) auth.signOut();
       else auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
@@ -213,7 +212,6 @@
       if (user) loadBookmarks();
     });
 
-    // BOOKMARKS
     function toggleBookmark() {
       if (!auth.currentUser || !currentBookId) return;
       const uid = auth.currentUser.uid;
@@ -240,7 +238,6 @@
         : "far fa-bookmark";
     }
 
-    // COMMENTS
     function postComment() {
       if (!auth.currentUser || !currentBookId) return;
       const text = document.getElementById("comment-input").value.trim();
@@ -269,7 +266,6 @@
       });
     }
 
-    // CHAPTERS
     function loadChapters(bookId) {
       const list = document.getElementById("chapters-list");
       db.ref("chapters/" + bookId).on("value", snap => {
@@ -287,7 +283,6 @@
       });
     }
 
-    // ADS
     function loadAds() {
       const adsDiv = document.getElementById("ads-space");
       db.ref("ads").on("value", snap => {
@@ -302,7 +297,6 @@
       });
     }
 
-    // SEARCH
     function searchBooks() {
       const query = document.getElementById("search-input").value.toLowerCase();
       const allBooks = document.querySelectorAll("#books-list .book-card");
@@ -312,11 +306,9 @@
       });
     }
 
-    // INITIALIZE
     loadLogo();
     loadBooks();
 
-    // OPEN BOOK IF URL HAS ?id=BOOKID
     const params = new URLSearchParams(window.location.search);
     const bookId = params.get("id");
 
