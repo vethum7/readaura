@@ -3,44 +3,115 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ReadAura — Book</title>
-  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+  <title>Book — ReadAura</title>
 
+  <!-- Google AdSense -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2883257010372888"
+    crossorigin="anonymous"></script>
+
+  <!-- Tailwind CSS -->
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-</head>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
+  <style>
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background-color: white;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .book-cover {
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    }
+    .chapter-card:hover {
+      background-color: #f3f4f6;
+    }
+  </style>
+</head>
 <body class="bg-gray-50 font-sans text-gray-800">
 
   <!-- Header -->
-  <header class="bg-white shadow p-4 flex justify-between items-center sticky top-0 z-40">
-    <h1 class="font-bold text-xl text-purple-600 cursor-pointer" onclick="goHome()">ReadAura</h1>
-    <button onclick="goBack()" class="text-blue-500">&larr; Back</button>
+  <header class="p-3 flex items-center justify-between">
+    <div class="flex items-center space-x-4">
+      <div id="logo" class="cursor-pointer flex items-center" onclick="goHome()">
+        <img id="site-logo" src="https://i.imgur.com/8WN9Od9.png" alt="ReadAura Logo" class="h-10 w-auto rounded">
+      </div>
+      <button onclick="goHome()" class="text-purple-600 font-semibold hover:underline whitespace-nowrap">
+        Home
+      </button>
+      <button onclick="goToAuthorPage()" class="text-purple-600 font-semibold hover:underline whitespace-nowrap">
+        Become an Author
+      </button>
+    </div>
+    <div class="flex items-center space-x-2">
+      <div class="flex items-center bg-gray-100 px-3 py-1 rounded w-48 sm:w-64">
+        <i class="fas fa-search text-gray-500 mr-2"></i>
+        <input id="search-input" type="text" placeholder="Search novels..." 
+          class="bg-transparent outline-none w-full text-sm">
+      </div>
+      <button id="auth-btn" class="bg-purple-600 text-white px-3 py-1 rounded" onclick="toggleAuth()">
+        Sign In
+      </button>
+    </div>
   </header>
 
-  <!-- Main -->
+  <!-- Book Section -->
   <main class="container mx-auto p-6">
+    <div id="book-detail" class="bg-white rounded-lg shadow-lg p-6">
+      <div class="flex flex-col md:flex-row">
+        <img id="book-cover" src="https://via.placeholder.com/200x300" alt="Book Cover" class="book-cover w-40 h-56 md:w-52 md:h-72 object-cover rounded-lg mx-auto md:mx-0" />
+        <div class="md:ml-6 mt-4 md:mt-0 flex-1">
+          <h1 id="book-title" class="text-2xl font-bold text-gray-900 mb-2">Book Title</h1>
+          <p id="book-author" class="text-gray-600 mb-1">Author: Unknown</p>
+          <p id="book-genre" class="text-gray-600 mb-1">Genre: N/A</p>
+          <p id="book-status" class="text-gray-600 mb-1">Status: Ongoing</p>
+          <p id="book-updated" class="text-gray-500 text-sm mb-3">Last updated: Just now</p>
 
-    <h2 id="book-title" class="text-3xl font-bold mb-2"></h2>
-    <p id="book-author" class="text-gray-600 mb-4"></p>
+          <!-- ⭐ NEW — Display Book Views -->
+          <p id="book-views" class="text-gray-600 mb-1">Views: Loading...</p>
 
-    <!-- Book Cover -->
-    <img id="book-cover" class="w-48 rounded shadow mb-6" />
+          <!-- ⭐ TAGS SECTION -->
+          <div id="book-tags" class="mt-2 mb-4">
+            <h3 class="text-md font-semibold mb-1">Tags:</h3>
+            <div id="tags-container" class="flex flex-wrap gap-2"></div>
+          </div>
 
-    <!-- Description -->
-    <p id="book-description" class="mb-6 whitespace-pre-line"></p>
+          <div class="flex space-x-3 mt-3">
+            <button class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded shadow-md" onclick="readNow()">📖 Read Now</button>
+          </div>
+        </div>
+      </div>
 
-    <!-- Chapters List -->
-    <h3 class="text-xl font-bold mb-2">Chapters</h3>
-    <div id="chapter-list" class="space-y-2"></div>
+      <!-- Book Description -->
+      <section class="mt-8">
+        <h2 class="text-xl font-semibold border-b pb-2 mb-3">Book Description</h2>
+        <p id="book-summary" class="text-gray-700 leading-relaxed">Loading description...</p>
+      </section>
 
+      <!-- Chapters -->
+      <section class="mt-8">
+        <h2 class="text-xl font-semibold border-b pb-2 mb-3">Chapters</h2>
+        <div id="chapter-list" class="space-y-2 max-h-96 overflow-y-auto">
+          <p class="text-gray-500 text-sm">Loading chapters...</p>
+        </div>
+      </section>
+    </div>
   </main>
 
-  <!-- Firebase Scripts -->
+  <!-- Footer -->
+  <footer class="bg-gray-900 text-white py-6 mt-10">
+    <div class="container mx-auto text-center text-sm">
+      &copy; 2025 ReadAura. All rights reserved.
+    </div>
+  </footer>
+
+  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 
   <script>
-    // Firebase Config
     const firebaseConfig = {
       apiKey: "AIzaSyA6-ATQLe_1n-GLzeXelqoO7Rm_WRXGR68",
       authDomain: "readaura.firebaseapp.com",
@@ -49,81 +120,112 @@
       storageBucket: "readaura.appspot.com",
       messagingSenderId: "824392534073",
       appId: "1:824392534073:web:dfa30e0e40fa540f16a5e8",
-      measurementId: "G-G6SWNJQYR5",
+      measurementId: "G-G6SWNJQYR5"
     };
-
     firebase.initializeApp(firebaseConfig);
+
     const db = firebase.database();
+    const auth = firebase.auth();
 
-    // URL param
-    function getParam(name) {
-      return new URLSearchParams(window.location.search).get(name);
+    function getQueryParam(param) {
+      return new URLSearchParams(window.location.search).get(param);
     }
 
-    const bookId = getParam("id");
+    function goHome() { window.location.href = "index.html"; }
+    function goToAuthorPage() { window.location.href = "become-an-author.html"; }
+    function readNow() {
+      const bookId = getQueryParam("id");
+      window.location.href = `chapter.html?bookId=${bookId}&chapter=1`;
+    }
 
-    // Load Book Data
+    function loadLogo() {
+      db.ref("site/logoUrl").on("value", snap => {
+        document.getElementById("site-logo").src = snap.val() || "https://i.imgur.com/8WN9Od9.png";
+      });
+    }
+
     function loadBook() {
-      db.ref("books/" + bookId).once("value").then((snap) => {
-        if (!snap.exists()) return alert("Book not found.");
+      const bookId = getQueryParam("id");
+      if (!bookId) return;
 
+      db.ref("books/" + bookId).on("value", snap => {
         const book = snap.val();
+        if (!book) return;
 
-        document.getElementById("book-title").innerText = book.title;
-        document.getElementById("book-author").innerText = "By " + (book.author || "Unknown");
-        document.getElementById("book-description").innerText = book.description || "";
-        document.getElementById("book-cover").src = book.cover || "";
-      });
+        document.getElementById("book-title").innerText = book.title || "Untitled";
+        document.getElementById("book-author").innerText = "Author: " + (book.author || "Unknown");
+        document.getElementById("book-genre").innerText = "Genre: " + (book.genre || "N/A");
+        document.getElementById("book-status").innerText = "Status: " + (book.status || "Ongoing");
+        document.getElementById("book-updated").innerText = "Last updated: " + (book.lastUpdated || "Recently");
+        document.getElementById("book-summary").innerText = book.description || "No description available.";
+        document.getElementById("book-cover").src = book.cover || "https://via.placeholder.com/200x300";
 
-      loadChapters();
-    }
-
-    // Load Chapters — FIXED FOR STRUCTURE B
-    function loadChapters() {
-      db.ref("chapters").once("value").then((snap) => {
-        const chapterListDiv = document.getElementById("chapter-list");
-        chapterListDiv.innerHTML = "";
-
-        const chapters = [];
-
-        snap.forEach((ch) => {
-          const c = ch.val();
-          if (c.bookId === bookId) {
-            chapters.push({
-              id: ch.key,
-              number: c.chapterNumber,
-              title: c.title || "Untitled Chapter",
-            });
-          }
-        });
-
-        chapters.sort((a, b) => a.number - b.number);
-
-        chapters.forEach((ch) => {
-          const div = document.createElement("div");
-          div.className = "p-3 border rounded cursor-pointer hover:bg-gray-100";
-          div.innerText = `Chapter ${ch.number}: ${ch.title}`;
-
-          div.onclick = () =>
-            (window.location.href = `chapter.html?bookId=${bookId}&chapter=${ch.number}`);
-
-          chapterListDiv.appendChild(div);
-        });
-
-        if (chapters.length === 0) {
-          chapterListDiv.innerHTML = "<p class='text-gray-500'>No chapters found.</p>";
+        /* ⭐ TAGS */
+        const tagsContainer = document.getElementById("tags-container");
+        tagsContainer.innerHTML = "";
+        if (book.tags) {
+          book.tags.forEach(tag => {
+            let span = document.createElement("span");
+            span.className = "px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded-full";
+            span.innerText = tag;
+            tagsContainer.appendChild(span);
+          });
         }
+
+        /* ⭐ AUTO-CREATE VIEWS IF MISSING */
+        if (book.views === undefined || book.views === null) {
+          db.ref("books/" + bookId + "/views").set(0);
+          book.views = 0;
+        }
+
+        /* ⭐ AUTO-INCREMENT VIEWS */
+        db.ref("books/" + bookId + "/views").transaction(current => {
+          return (current || 0) + 1;
+        });
+
+        /* ⭐ SHOW VIEWS */
+        document.getElementById("book-views").innerText = "Views: " + book.views;
+
+        loadChapters(bookId);
       });
     }
 
-    // Navigation
-    function goBack() {
-      window.history.back();
-    }
-    function goHome() {
-      window.location.href = "index.html";
+    function loadChapters(bookId) {
+      const chapterList = document.getElementById("chapter-list");
+      chapterList.innerHTML = "<p class='text-gray-500 text-sm'>Loading chapters...</p>";
+
+      db.ref(`chapters/${bookId}`).once("value").then(snap => {
+        if (!snap.exists()) {
+          chapterList.innerHTML = "<p class='text-gray-500 text-sm'>No chapters found.</p>";
+          return;
+        }
+
+        let chapters = [];
+        snap.forEach(ch => chapters.push({ id: parseInt(ch.key), ...ch.val() }));
+        chapters.sort((a, b) => a.id - b.id);
+
+        chapterList.innerHTML = "";
+        chapters.forEach(ch => {
+          const div = document.createElement("div");
+          div.className = "chapter-card border p-3 rounded cursor-pointer";
+          div.innerText = ch.title || `Chapter ${ch.id}`;
+          div.onclick = () =>
+            window.location.href = `chapter.html?bookId=${bookId}&chapter=${ch.id}`;
+          chapterList.appendChild(div);
+        });
+      });
     }
 
+    function toggleAuth() {
+      if (auth.currentUser) auth.signOut();
+      else auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
+    }
+
+    auth.onAuthStateChanged(user => {
+      document.getElementById("auth-btn").innerText = user ? "Sign Out" : "Sign In";
+    });
+
+    loadLogo();
     loadBook();
   </script>
 </body>
