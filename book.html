@@ -6,8 +6,7 @@
   <title>Book — ReadAura</title>
 
   <!-- Google AdSense -->
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2883257010372888"
-    crossorigin="anonymous"></script>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2883257010372888" crossorigin="anonymous"></script>
 
   <!-- Tailwind CSS -->
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
@@ -29,6 +28,7 @@
     }
   </style>
 </head>
+
 <body class="bg-gray-50 font-sans text-gray-800">
 
   <!-- Header -->
@@ -37,30 +37,27 @@
       <div id="logo" class="cursor-pointer flex items-center" onclick="goHome()">
         <img id="site-logo" src="https://i.imgur.com/8WN9Od9.png" alt="ReadAura Logo" class="h-10 w-auto rounded">
       </div>
-      <button onclick="goHome()" class="text-purple-600 font-semibold hover:underline whitespace-nowrap">
-        Home
-      </button>
-      <button onclick="goToAuthorPage()" class="text-purple-600 font-semibold hover:underline whitespace-nowrap">
-        Become an Author
-      </button>
+      <button onclick="goHome()" class="text-purple-600 font-semibold hover:underline whitespace-nowrap"> Home </button>
+      <button onclick="goToAuthorPage()" class="text-purple-600 font-semibold hover:underline whitespace-nowrap"> Become an Author </button>
     </div>
+
     <div class="flex items-center space-x-2">
       <div class="flex items-center bg-gray-100 px-3 py-1 rounded w-48 sm:w-64">
         <i class="fas fa-search text-gray-500 mr-2"></i>
-        <input id="search-input" type="text" placeholder="Search novels..." 
-          class="bg-transparent outline-none w-full text-sm">
+        <input id="search-input" type="text" placeholder="Search novels..." class="bg-transparent outline-none w-full text-sm">
       </div>
-      <button id="auth-btn" class="bg-purple-600 text-white px-3 py-1 rounded" onclick="toggleAuth()">
-        Sign In
-      </button>
+      <button id="auth-btn" class="bg-purple-600 text-white px-3 py-1 rounded" onclick="toggleAuth()"> Sign In </button>
     </div>
   </header>
 
   <!-- Book Section -->
   <main class="container mx-auto p-6">
     <div id="book-detail" class="bg-white rounded-lg shadow-lg p-6">
+
       <div class="flex flex-col md:flex-row">
-        <img id="book-cover" src="https://via.placeholder.com/200x300" alt="Book Cover" class="book-cover w-40 h-56 md:w-52 md:h-72 object-cover rounded-lg mx-auto md:mx-0" />
+        <img id="book-cover" src="https://via.placeholder.com/200x300" alt="Book Cover"
+             class="book-cover w-40 h-56 md:w-52 md:h-72 object-cover rounded-lg mx-auto md:mx-0" />
+
         <div class="md:ml-6 mt-4 md:mt-0 flex-1">
           <h1 id="book-title" class="text-2xl font-bold text-gray-900 mb-2">Book Title</h1>
           <p id="book-author" class="text-gray-600 mb-1">Author: Unknown</p>
@@ -68,13 +65,12 @@
           <p id="book-status" class="text-gray-600 mb-1">Status: Ongoing</p>
           <p id="book-updated" class="text-gray-500 text-sm mb-3">Last updated: Just now</p>
 
-          <!-- ⭐ NEW — Display Book Views -->
-          <p id="book-views" class="text-gray-600 mb-1">Views: Loading...</p>
-
-          <!-- ⭐ TAGS SECTION -->
+          <!-- 📌 TAGS SECTION ADDED HERE -->
           <div id="book-tags" class="mt-2 mb-4">
             <h3 class="text-md font-semibold mb-1">Tags:</h3>
-            <div id="tags-container" class="flex flex-wrap gap-2"></div>
+            <div id="tags-container" class="flex flex-wrap gap-2">
+              <!-- Tags will be inserted here -->
+            </div>
           </div>
 
           <div class="flex space-x-3 mt-3">
@@ -86,7 +82,7 @@
       <!-- Book Description -->
       <section class="mt-8">
         <h2 class="text-xl font-semibold border-b pb-2 mb-3">Book Description</h2>
-        <p id="book-summary" class="text-gray-700 leading-relaxed">Loading description...</p>
+        <p id="book-summary" class="text-gray-700 leading-relaxed"> Loading description... </p>
       </section>
 
       <!-- Chapters -->
@@ -96,6 +92,7 @@
           <p class="text-gray-500 text-sm">Loading chapters...</p>
         </div>
       </section>
+
     </div>
   </main>
 
@@ -122,8 +119,8 @@
       appId: "1:824392534073:web:dfa30e0e40fa540f16a5e8",
       measurementId: "G-G6SWNJQYR5"
     };
-    firebase.initializeApp(firebaseConfig);
 
+    firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
     const auth = firebase.auth();
 
@@ -131,11 +128,17 @@
       return new URLSearchParams(window.location.search).get(param);
     }
 
-    function goHome() { window.location.href = "index.html"; }
-    function goToAuthorPage() { window.location.href = "become-an-author.html"; }
+    function goHome() {
+      window.location.href = "index.html";
+    }
+
+    function goToAuthorPage() {
+      window.location.href = "become-an-author.html";
+    }
+
     function readNow() {
       const bookId = getQueryParam("id");
-      window.location.href = `chapter.html?bookId=${bookId}&chapter=1`;
+      window.location.href = chapter.html?bookId=${bookId}&chapter=1;
     }
 
     function loadLogo() {
@@ -160,9 +163,10 @@
         document.getElementById("book-summary").innerText = book.description || "No description available.";
         document.getElementById("book-cover").src = book.cover || "https://via.placeholder.com/200x300";
 
-        /* ⭐ TAGS */
+        /* 📌 LOAD TAGS */
         const tagsContainer = document.getElementById("tags-container");
         tagsContainer.innerHTML = "";
+
         if (book.tags) {
           book.tags.forEach(tag => {
             let span = document.createElement("span");
@@ -172,20 +176,6 @@
           });
         }
 
-        /* ⭐ AUTO-CREATE VIEWS IF MISSING */
-        if (book.views === undefined || book.views === null) {
-          db.ref("books/" + bookId + "/views").set(0);
-          book.views = 0;
-        }
-
-        /* ⭐ AUTO-INCREMENT VIEWS */
-        db.ref("books/" + bookId + "/views").transaction(current => {
-          return (current || 0) + 1;
-        });
-
-        /* ⭐ SHOW VIEWS */
-        document.getElementById("book-views").innerText = "Views: " + book.views;
-
         loadChapters(bookId);
       });
     }
@@ -194,7 +184,7 @@
       const chapterList = document.getElementById("chapter-list");
       chapterList.innerHTML = "<p class='text-gray-500 text-sm'>Loading chapters...</p>";
 
-      db.ref(`chapters/${bookId}`).once("value").then(snap => {
+      db.ref(chapters/${bookId}).once("value").then(snap => {
         if (!snap.exists()) {
           chapterList.innerHTML = "<p class='text-gray-500 text-sm'>No chapters found.</p>";
           return;
@@ -208,9 +198,8 @@
         chapters.forEach(ch => {
           const div = document.createElement("div");
           div.className = "chapter-card border p-3 rounded cursor-pointer";
-          div.innerText = ch.title || `Chapter ${ch.id}`;
-          div.onclick = () =>
-            window.location.href = `chapter.html?bookId=${bookId}&chapter=${ch.id}`;
+          div.innerText = ch.title || Chapter ${ch.id};
+          div.onclick = () => window.location.href = chapter.html?bookId=${bookId}&chapter=${ch.id};
           chapterList.appendChild(div);
         });
       });
@@ -228,5 +217,6 @@
     loadLogo();
     loadBook();
   </script>
+
 </body>
 </html>
