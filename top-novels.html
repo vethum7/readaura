@@ -1,9 +1,12 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Top Novels — ReadAura</title>
+
+  <!-- ✅ Favicon -->
+  <link rel="icon" type="image/png" href="https://i.imgur.com/8WN9Od9.png">
 
   <!-- Google AdSense -->
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2883257010372888"
@@ -81,7 +84,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 
   <script>
-    // ✅ Firebase Config
+    // Firebase Config
     const firebaseConfig = {
       apiKey: "AIzaSyA6-ATQLe_1n-GLzeXelqoO7Rm_WRXGR68",
       authDomain: "readaura.firebaseapp.com",
@@ -97,7 +100,7 @@
     const auth = firebase.auth();
     const db = firebase.database();
 
-    /* 🔹 NAVIGATION */
+    // NAVIGATION
     function goHome() {
       window.location.href = "index.html";
     }
@@ -105,7 +108,7 @@
       window.location.href = "become-an-author.html";
     }
 
-    /* 🔹 LOAD LOGO */
+    // LOAD LOGO
     function loadLogo() {
       db.ref("site/logo").on("value", snap => {
         const logoUrl = snap.val();
@@ -114,7 +117,7 @@
       });
     }
 
-    /* 🔹 LOAD TOP NOVELS */
+    // LOAD TOP NOVELS
     function loadTopNovels() {
       const list = document.getElementById("top-novels-list");
       db.ref("books").on("value", snap => {
@@ -135,10 +138,8 @@
           });
         });
 
-        // Sort by weekly views (descending)
         novels.sort((a, b) => b.weeklyViews - a.weeklyViews);
 
-        // Display ranked novels
         list.innerHTML = "";
         novels.forEach((novel, index) => {
           const rank = index + 1;
@@ -163,11 +164,10 @@
     }
 
     function openNovel(bookId) {
-      // ✅ Updated: directs to new dynamic workflow in book.html
       window.location.href = `book.html?id=${encodeURIComponent(bookId)}`;
     }
 
-    /* 🔹 AUTH SYSTEM */
+    // AUTH SYSTEM
     function toggleAuth() {
       if (auth.currentUser) auth.signOut();
       else auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
@@ -177,7 +177,7 @@
       document.getElementById("auth-btn").innerText = user ? "Sign Out" : "Sign In";
     });
 
-    /* 🔹 SEARCH */
+    // SEARCH
     function searchNovels() {
       const query = document.getElementById("search-input").value.toLowerCase();
       const cards = document.querySelectorAll("#top-novels-list .book-card");
@@ -187,7 +187,7 @@
       });
     }
 
-    // ✅ Initialize
+    // INIT
     loadLogo();
     loadTopNovels();
   </script>
