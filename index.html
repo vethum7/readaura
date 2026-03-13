@@ -74,10 +74,8 @@
 
   <!-- Main -->
   <main class="container mx-auto p-4 mt-6">
-    <!-- Book list -->
     <div id="books-list" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4"></div>
 
-    <!-- Book detail -->
     <div id="book-detail" class="hidden mt-4">
       <button onclick="showBooks()" class="text-blue-500 mb-2">&larr; Back</button>
       <img id="book-cover" class="w-48 h-64 object-cover mb-4 hidden rounded shadow">
@@ -106,9 +104,8 @@
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 
   <script>
-    // Firebase config
     const firebaseConfig = {
-      apiKey: "AIzaSyA6-ATQLe_1n-GLzeXelqoO7Rm_WRXGR68",
+      apiKey: "AIzaSyAPEzboghpjuqODmwjwM7IHl9KPUl4Xm-U",
       authDomain: "readaura.firebaseapp.com",
       databaseURL: "https://readaura-default-rtdb.firebaseio.com",
       projectId: "readaura",
@@ -125,7 +122,6 @@
     let currentBookId = null;
     let bookmarks = [];
 
-    // Load Logo
     function loadLogo() {
       db.ref("site/logo").on("value", snap => {
         const logoUrl = snap.val();
@@ -134,7 +130,6 @@
       });
     }
 
-    // NAVIGATION FUNCTIONS
     function goHome() {
       document.getElementById("book-detail").classList.add("hidden");
       document.getElementById("books-list").classList.remove("hidden");
@@ -149,7 +144,6 @@
     function goToAuthorPage() { window.location.href = "become-an-author.html"; }
     function showTopNovels() { window.location.href = "top-novels.html"; }
 
-    // LOAD BOOKS
     function loadBooks() {
       db.ref("books").on("value", snap => {
         const list = document.getElementById("books-list");
