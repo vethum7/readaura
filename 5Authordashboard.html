@@ -1486,10 +1486,86 @@
                 </div>
             </section>
 
-            <!-- Other sections would go here with similar structure -->
+            <!-- Publishing Schedule Section -->
+            <section id="publishing-schedule" class="content-section" style="display: none;">
+                <div class="section-header">
+                    <h2>Publishing Schedule</h2>
+                </div>
+                <div class="section-body">
+                    <div id="publishing-schedule-container">
+                        <p class="text-gray-500">Schedule your chapter releases here. This feature is coming soon.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Story Settings Section -->
+            <section id="story-settings" class="content-section" style="display: none;">
+                <div class="section-header">
+                    <h2>Story Settings</h2>
+                </div>
+                <div class="section-body">
+                    <div id="story-settings-container">
+                        <p class="text-gray-500">Advanced story settings coming soon.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tags & Genres Section -->
+            <section id="tags-genres" class="content-section" style="display: none;">
+                <div class="section-header">
+                    <h2>Tags & Genres</h2>
+                </div>
+                <div class="section-body">
+                    <div id="tags-genres-container">
+                        <p class="text-gray-500">Manage your story tags and genres here.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Writing Guide Section -->
+            <section id="writing-guide" class="content-section" style="display: none;">
+                <div class="section-header">
+                    <h2>Writing Guide</h2>
+                </div>
+                <div class="section-body">
+                    <div class="prose max-w-none">
+                        <h3>Tips for Engaging Stories</h3>
+                        <ul>
+                            <li>Start with a hook that grabs attention.</li>
+                            <li>Develop relatable characters.</li>
+                            <li>Use descriptive language to paint vivid scenes.</li>
+                            <li>Maintain consistent pacing.</li>
+                            <li>End chapters with cliffhangers to keep readers coming back.</li>
+                        </ul>
+                        <h3>Chapter Structure</h3>
+                        <p>Aim for chapters between 1500-3000 words for optimal reader engagement on digital platforms.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Author Community Section -->
+            <section id="author-community" class="content-section" style="display: none;">
+                <div class="section-header">
+                    <h2>Author Community</h2>
+                </div>
+                <div class="section-body">
+                    <p>Connect with other authors, share tips, and get feedback. Community features coming soon!</p>
+                </div>
+            </section>
+
+            <!-- Author Support Section -->
+            <section id="author-support" class="content-section" style="display: none;">
+                <div class="section-header">
+                    <h2>Author Support</h2>
+                </div>
+                <div class="section-body">
+                    <p>Need help? Contact us at <a href="mailto:support@readaura.com">support@readaura.com</a></p>
+                    <p>Check our <a href="#">FAQ</a> for common questions.</p>
+                </div>
+            </section>
 
             <div class="footer">
-                <p>© 2023 ReadAura Author Dashboard. All rights reserved.</p>
+                <p>© 2025 ReadAura Author Dashboard. All rights reserved.</p>
             </div>
         </div>
     </div>
@@ -1510,282 +1586,670 @@
         </div>
     </div>
 
-    <!-- Firebase -->
-    <script type="module">
-/* =========================
-   🔥 FIREBASE V9 SETUP
-========================= */
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+    <!-- Firebase SDKs (Compat version for v8) -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 
-import {
-    getAuth,
-    createUserWithEmailAndPassword,
-    signInWithEmailAndPassword,
-    signOut,
-    updateProfile,
-    onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+    <script>
+        // ==================== FIREBASE CONFIGURATION (UPDATED) ====================
+        const firebaseConfig = {
+            apiKey: "AIzaSyBIums2N8B9AcAqwbstg1eVOOGsJZXrnPU",
+            authDomain: "readaura.firebaseapp.com",
+            databaseURL: "https://readaura-default-rtdb.firebaseio.com",
+            projectId: "readaura",
+            storageBucket: "readaura.firebasestorage.app",
+            messagingSenderId: "824392534073",
+            appId: "1:824392534073:web:dfa30e0e40fa540f16a5e8",
+            measurementId: "G-G6SWNJQYR5"
+        };
 
-import {
-    getDatabase,
-    ref,
-    set,
-    update,
-    remove,
-    onValue,
-    get,
-    query,
-    orderByChild,
-    equalTo
-} from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        const auth = firebase.auth();
 
-/* =========================
-   🔥 CONFIG (PUT YOURS)
-========================= */
-const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_DOMAIN",
-    databaseURL: "YOUR_DB_URL",
-    projectId: "YOUR_ID",
-};
+        // DOM Elements
+        const loginScreen = document.getElementById('login-screen');
+        const registerScreen = document.getElementById('register-screen');
+        const authorDashboard = document.getElementById('author-dashboard');
+        const loginForm = document.getElementById('login-form');
+        const registerForm = document.getElementById('register-form');
+        const showRegister = document.getElementById('show-register');
+        const showLogin = document.getElementById('show-login');
+        const createStoryForm = document.getElementById('create-story-form');
+        const chapterForm = document.getElementById('chapter-form-element');
+        const profileForm = document.getElementById('profile-form');
+        const confirmationModal = document.getElementById('confirmation-modal');
+        const confirmationTitle = document.getElementById('confirmation-title');
+        const confirmationMessage = document.getElementById('confirmation-message');
+        const confirmCancel = document.getElementById('confirm-cancel');
+        const confirmOk = document.getElementById('confirm-ok');
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getDatabase(app);
+        // User data
+        let currentUser = null;
+        let userStories = [];
+        let currentStoryChapters = [];
+        let currentStoryId = null;
+        let storyTags = [];
+        let userProfile = {};
 
-/* =========================
-   GLOBAL STATE
-========================= */
-let currentUser = null;
-let userProfile = {};
-let userStories = [];
-let storyTags = [];
-let currentStoryId = null;
-let currentStoryChapters = [];
-
-/* =========================
-   AUTH STATE
-========================= */
-onAuthStateChanged(auth, (user) => {
-    currentUser = user;
-    if (user) {
-        loadUserProfile();
-        loadUserStories();
-    }
-});
-
-/* =========================
-   REGISTER
-========================= */
-window.registerUser = async (name, email, password) => {
-    try {
-        // check name exists
-        const exists = await checkAuthorNameExists(name);
-        if (exists) return alert("Name already taken");
-
-        const res = await createUserWithEmailAndPassword(auth, email, password);
-        const user = res.user;
-
-        await updateProfile(user, { displayName: name });
-
-        await set(ref(db, "users/" + user.uid), {
-            name,
-            email,
-            role: "author",
-            createdAt: new Date().toISOString()
+        // Check if user is already logged in
+        firebase.auth().onAuthStateChanged((user) => {
+            if (user) {
+                currentUser = user;
+                showAuthorDashboard(user);
+                loadUserProfile();
+                loadUserStories();
+                loadComments();
+            } else {
+                showLoginScreen();
+            }
         });
 
-        alert("Registered successfully");
-    } catch (err) {
-        alert(err.message);
-    }
-};
+        // Show login screen
+        function showLoginScreen() {
+            loginScreen.classList.remove('hidden');
+            registerScreen.classList.add('hidden');
+            authorDashboard.classList.add('hidden');
+        }
 
-/* =========================
-   LOGIN
-========================= */
-window.loginUser = async (email, password) => {
-    try {
-        await signInWithEmailAndPassword(auth, email, password);
-    } catch (err) {
-        alert(err.message);
-    }
-};
+        // Show register screen
+        function showRegisterScreen() {
+            loginScreen.classList.add('hidden');
+            registerScreen.classList.remove('hidden');
+            authorDashboard.classList.add('hidden');
+        }
 
-/* =========================
-   LOGOUT
-========================= */
-window.logoutUser = async () => {
-    await signOut(auth);
-};
+        // Show author dashboard
+        function showAuthorDashboard(user) {
+            loginScreen.classList.add('hidden');
+            registerScreen.classList.add('hidden');
+            authorDashboard.classList.remove('hidden');
+            
+            // Update user info in dashboard
+            document.getElementById('user-name').textContent = user.displayName || user.email;
+            document.getElementById('header-user-name').textContent = user.displayName || user.email;
+            document.getElementById('user-avatar').textContent = user.displayName ? user.displayName.charAt(0).toUpperCase() : user.email.charAt(0).toUpperCase();
+        }
 
-/* =========================
-   CHECK NAME EXISTS
-========================= */
-async function checkAuthorNameExists(name) {
-    const q = query(ref(db, "users"), orderByChild("name"), equalTo(name));
-    const snapshot = await get(q);
-    return snapshot.exists();
-}
-
-/* =========================
-   LOAD PROFILE
-========================= */
-function loadUserProfile() {
-    if (!currentUser) return;
-
-    onValue(ref(db, "users/" + currentUser.uid), (snap) => {
-        userProfile = snap.val() || {};
-
-        document.getElementById("profile-name").value =
-            userProfile.name || currentUser.displayName || "";
-
-        document.getElementById("profile-bio").value =
-            userProfile.bio || "";
-    });
-}
-
-/* =========================
-   UPDATE PROFILE
-========================= */
-window.updateUserProfile = async () => {
-    const name = document.getElementById("profile-name").value;
-
-    if (!name) return alert("Name required");
-
-    try {
-        await update(ref(db, "users/" + currentUser.uid), {
-            name,
-            updatedAt: new Date().toISOString()
+        // Login form submission
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            auth.signInWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    console.log('User logged in:', userCredential.user);
+                })
+                .catch((error) => {
+                    alert('Login failed: ' + error.message);
+                });
         });
 
-        await updateProfile(currentUser, { displayName: name });
-
-        alert("Profile updated");
-    } catch (err) {
-        alert(err.message);
-    }
-};
-
-/* =========================
-   CREATE STORY
-========================= */
-window.createStory = async () => {
-    if (!currentUser) return alert("Login first");
-
-    const title = document.getElementById("story-title").value;
-
-    if (!title) return alert("Title required");
-
-    const exists = await checkStoryTitleExists(title);
-    if (exists) return alert("Story title exists");
-
-    const id = "story_" + Date.now();
-
-    await set(ref(db, "books/" + id), {
-        title,
-        authorId: currentUser.uid,
-        author: currentUser.displayName,
-        tags: storyTags,
-        createdAt: new Date().toISOString(),
-        status: "draft",
-        views: 0
-    });
-
-    alert("Story created");
-};
-
-/* =========================
-   CHECK STORY TITLE
-========================= */
-async function checkStoryTitleExists(title) {
-    const q = query(
-        ref(db, "books"),
-        orderByChild("authorId"),
-        equalTo(currentUser.uid)
-    );
-
-    const snap = await get(q);
-    let exists = false;
-
-    snap.forEach((child) => {
-        if (child.val().title === title) exists = true;
-    });
-
-    return exists;
-}
-
-/* =========================
-   LOAD STORIES
-========================= */
-function loadUserStories() {
-    if (!currentUser) return;
-
-    const q = query(
-        ref(db, "books"),
-        orderByChild("authorId"),
-        equalTo(currentUser.uid)
-    );
-
-    onValue(q, (snap) => {
-        userStories = [];
-        snap.forEach((c) => {
-            userStories.push({
-                id: c.key,
-                ...c.val()
+        // Register form submission
+        registerForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const name = document.getElementById('reg-name').value;
+            const email = document.getElementById('reg-email').value;
+            const password = document.getElementById('reg-password').value;
+            const confirm = document.getElementById('reg-confirm').value;
+            
+            if (password !== confirm) {
+                alert('Passwords do not match');
+                return;
+            }
+            
+            // Check if author name already exists
+            checkAuthorNameExists(name).then((exists) => {
+                if (exists) {
+                    alert('This author name is not available. Please use another one.');
+                    return;
+                }
+                
+                auth.createUserWithEmailAndPassword(email, password)
+                    .then((userCredential) => {
+                        const user = userCredential.user;
+                        return user.updateProfile({ displayName: name });
+                    })
+                    .then(() => {
+                        const user = auth.currentUser;
+                        return db.ref('users/' + user.uid).set({
+                            name: name,
+                            email: email,
+                            role: 'author',
+                            createdAt: new Date().toISOString()
+                        });
+                    })
+                    .then(() => {
+                        console.log('User registered and saved to database');
+                    })
+                    .catch((error) => {
+                        alert('Registration failed: ' + error.message);
+                    });
             });
         });
 
-        console.log("Stories loaded", userStories);
-    });
-}
+        // Check if author name already exists
+        function checkAuthorNameExists(name) {
+            return db.ref('users').orderByChild('name').equalTo(name).once('value')
+                .then((snapshot) => snapshot.exists());
+        }
 
-/* =========================
-   DELETE STORY
-========================= */
-window.deleteStory = async (id) => {
-    await remove(ref(db, "books/" + id));
-};
+        // Load user profile
+        function loadUserProfile() {
+            if (!currentUser) return;
+            
+            db.ref('users/' + currentUser.uid).on('value', (snapshot) => {
+                userProfile = snapshot.val() || {};
+                
+                document.getElementById('profile-name').value = userProfile.name || currentUser.displayName || '';
+                document.getElementById('profile-bio').value = userProfile.bio || '';
+                document.getElementById('profile-picture').value = userProfile.profilePicture || '';
+                document.getElementById('profile-website').value = userProfile.website || '';
+                document.getElementById('profile-social').value = userProfile.social || '';
+                
+                if (userProfile.profilePicture) {
+                    document.getElementById('user-avatar').style.backgroundImage = `url('${userProfile.profilePicture}')`;
+                    document.getElementById('user-profile-img').src = userProfile.profilePicture;
+                }
+            });
+        }
 
-/* =========================
-   CHAPTERS
-========================= */
-window.addChapter = async (title, content) => {
-    if (!currentStoryId) return;
+        // Profile form submission
+        profileForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const name = document.getElementById('profile-name').value;
+            const bio = document.getElementById('profile-bio').value;
+            const profilePicture = document.getElementById('profile-picture').value;
+            const website = document.getElementById('profile-website').value;
+            const social = document.getElementById('profile-social').value;
+            
+            if (!name) {
+                alert('Display name is required');
+                return;
+            }
+            
+            const updateProfileData = () => {
+                const updates = {
+                    name: name,
+                    bio: bio,
+                    profilePicture: profilePicture,
+                    website: website,
+                    social: social,
+                    updatedAt: new Date().toISOString()
+                };
+                
+                db.ref('users/' + currentUser.uid).update(updates)
+                    .then(() => currentUser.updateProfile({ displayName: name }))
+                    .then(() => {
+                        alert('Profile updated successfully!');
+                        loadUserProfile();
+                    })
+                    .catch((error) => alert('Error updating profile: ' + error.message));
+            };
+            
+            if (name !== userProfile.name) {
+                checkAuthorNameExists(name).then((exists) => {
+                    if (exists) {
+                        alert('This author name is not available. Please use another one.');
+                        return;
+                    }
+                    showConfirmation('Update Profile', 'Are you sure you want to update your profile information?', updateProfileData);
+                });
+            } else {
+                showConfirmation('Update Profile', 'Are you sure you want to update your profile information?', updateProfileData);
+            }
+        });
 
-    let number = 1;
-    if (currentStoryChapters.length > 0) {
-        number =
-            Math.max(...currentStoryChapters.map(c => c.number)) + 1;
-    }
+        // Create story form submission
+        createStoryForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            if (!currentUser) {
+                alert('Please log in to create a story');
+                return;
+            }
 
-    await set(ref(db, `chapters/${currentStoryId}/${number}`), {
-        title,
-        content,
-        number,
-        status: "draft",
-        createdAt: new Date().toISOString()
-    });
+            const title = document.getElementById('story-title').value;
+            const description = document.getElementById('story-description').value;
+            const genre = document.getElementById('story-genre').value;
+            const cover = document.getElementById('story-cover').value;
 
-    alert("Chapter added");
-};
+            if (!title) {
+                alert('Story title is required');
+                return;
+            }
 
-/* =========================
-   LOAD CHAPTERS
-========================= */
-function loadChapters(storyId) {
-    onValue(ref(db, `chapters/${storyId}`), (snap) => {
-        currentStoryChapters = [];
+            checkStoryTitleExists(title).then((exists) => {
+                if (exists) {
+                    alert('You already have a story with this title. Please use a different title.');
+                    return;
+                }
 
-        snap.forEach((c) => {
-            currentStoryChapters.push({
-                id: c.key,
-                ...c.val()
+                const storyId = 'story_' + Date.now();
+                db.ref('books/' + storyId).set({
+                    title: title,
+                    description: description,
+                    genre: genre,
+                    tags: storyTags,
+                    cover: cover,
+                    author: currentUser.displayName || currentUser.email,
+                    authorId: currentUser.uid,
+                    createdAt: new Date().toISOString(),
+                    status: 'draft',
+                    views: 0
+                }).then(() => {
+                    alert('Story created successfully!');
+                    createStoryForm.reset();
+                    storyTags = [];
+                    updateTagsDisplay();
+                    showSection('my-stories');
+                    loadUserStories();
+                }).catch((error) => alert('Error creating story: ' + error.message));
             });
         });
-    });
-}
 
-</script>
+        // Check if story title already exists for this author
+        function checkStoryTitleExists(title) {
+            return db.ref('books').orderByChild('authorId').equalTo(currentUser.uid).once('value')
+                .then((snapshot) => {
+                    let exists = false;
+                    snapshot.forEach((childSnapshot) => {
+                        if (childSnapshot.val().title === title) exists = true;
+                    });
+                    return exists;
+                });
+        }
+
+        // Tags functionality
+        const tagsInput = document.getElementById('story-tags-input');
+        const tagsContainer = document.getElementById('story-tags-container');
+
+        tagsInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ',') {
+                e.preventDefault();
+                const tag = tagsInput.value.trim();
+                if (tag && !storyTags.includes(tag)) {
+                    storyTags.push(tag);
+                    updateTagsDisplay();
+                }
+                tagsInput.value = '';
+            }
+        });
+
+        function updateTagsDisplay() {
+            const existingTags = tagsContainer.querySelectorAll('.tag-item');
+            existingTags.forEach(tag => tag.remove());
+            
+            storyTags.forEach(tag => {
+                const tagElement = document.createElement('div');
+                tagElement.className = 'tag-item';
+                tagElement.innerHTML = `${tag}<span class="remove-tag" data-tag="${tag}">×</span>`;
+                tagsContainer.insertBefore(tagElement, tagsInput);
+            });
+            
+            document.querySelectorAll('.remove-tag').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const tagToRemove = e.target.getAttribute('data-tag');
+                    storyTags = storyTags.filter(tag => tag !== tagToRemove);
+                    updateTagsDisplay();
+                });
+            });
+        }
+
+        // Load user stories
+        function loadUserStories() {
+            if (!currentUser) return;
+            db.ref('books').orderByChild('authorId').equalTo(currentUser.uid).on('value', (snapshot) => {
+                userStories = [];
+                snapshot.forEach((childSnapshot) => {
+                    userStories.push({ id: childSnapshot.key, ...childSnapshot.val() });
+                });
+                updateStoriesCount();
+                displayUserStories();
+                updateWritingProgress();
+                updateChapterDraftsCount();
+            });
+        }
+
+        function updateStoriesCount() {
+            document.getElementById('active-stories-count').textContent = userStories.length;
+            document.getElementById('stories-count').textContent = userStories.length;
+        }
+
+        function displayUserStories() {
+            const storiesList = document.getElementById('my-stories-list');
+            if (userStories.length === 0) {
+                storiesList.innerHTML = '<p class="text-gray-500">You haven\'t created any stories yet. <a href="#" onclick="showSection(\'create-story\')" class="text-purple-600">Create your first story</a>.</p>';
+                return;
+            }
+            let html = '';
+            userStories.forEach(story => {
+                html += `
+                    <div class="border rounded-lg p-4 mb-4" style="border:1px solid #e5e7eb; border-radius:8px; padding:16px; margin-bottom:16px;">
+                        <div style="display:flex; align-items:flex-start;">
+                            ${story.cover ? `<img src="${story.cover}" style="width:64px; height:96px; object-fit:cover; border-radius:8px; margin-right:16px;">` : 
+                            `<div style="width:64px; height:96px; background:#e5e7eb; border-radius:8px; display:flex; align-items:center; justify-content:center; margin-right:16px;"><i class="fas fa-book"></i></div>`}
+                            <div style="flex:1;">
+                                <h3 style="font-weight:bold; font-size:1.125rem;">${escapeHtml(story.title)}</h3>
+                                <p style="color:#4b5563;">${escapeHtml(story.description || 'No description')}</p>
+                                <div style="margin-top:8px; display:flex; align-items:center; font-size:0.875rem; color:#6b7280;">
+                                    <span style="margin-right:12px;">Genre: ${story.genre || 'Not specified'}</span>
+                                    <span style="margin-right:12px;">Status: ${story.status || 'Draft'}</span>
+                                    <span>Views: ${story.views || 0}</span>
+                                </div>
+                                ${story.tags && story.tags.length ? `<div style="margin-top:8px;"><strong>Tags:</strong> ${story.tags.join(', ')}</div>` : ''}
+                                <div style="margin-top:12px;">
+                                    <button onclick="editStory('${story.id}')" class="action-btn edit"><i class="fas fa-edit"></i></button>
+                                    <button onclick="deleteStory('${story.id}')" class="action-btn delete"><i class="fas fa-trash"></i></button>
+                                    <button onclick="manageChapters('${story.id}')" style="margin-left:8px; background:#8b5cf6; color:white; padding:4px 12px; border-radius:4px; font-size:0.875rem; border:none; cursor:pointer;">Manage Chapters</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            storiesList.innerHTML = html;
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
+
+        function updateWritingProgress() {
+            const container = document.getElementById('writing-progress-container');
+            if (userStories.length === 0) {
+                container.innerHTML = '<p class="text-gray-500">No active stories yet. <a href="#" onclick="showSection(\'create-story\')" class="text-purple-600">Create your first story</a> to start tracking progress.</p>';
+                return;
+            }
+            let html = '<div class="writing-progress">';
+            userStories.forEach(story => {
+                const progress = Math.floor(Math.random() * 100);
+                html += `
+                    <div class="progress-card">
+                        <div class="progress-header">
+                            <h3>${escapeHtml(story.title)}</h3>
+                            <span class="status ${story.status === 'published' ? 'published' : 'draft'}">${story.status || 'Draft'}</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${progress}%; background: ${story.status === 'published' ? '#10b981' : '#f59e0b'};"></div>
+                        </div>
+                        <div class="progress-info">
+                            <span>Progress</span>
+                            <span>${progress}% complete</span>
+                        </div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        function editStory(storyId) {
+            const story = userStories.find(s => s.id === storyId);
+            if (story) {
+                document.getElementById('story-title').value = story.title;
+                document.getElementById('story-description').value = story.description || '';
+                document.getElementById('story-genre').value = story.genre || '';
+                document.getElementById('story-cover').value = story.cover || '';
+                storyTags = story.tags || [];
+                updateTagsDisplay();
+                
+                const originalSubmit = createStoryForm.onsubmit;
+                createStoryForm.onsubmit = function(e) {
+                    e.preventDefault();
+                    updateStory(storyId);
+                };
+                const submitBtn = createStoryForm.querySelector('button[type="submit"]');
+                submitBtn.textContent = 'Update Story';
+                showSection('create-story');
+            }
+        }
+
+        function updateStory(storyId) {
+            const title = document.getElementById('story-title').value;
+            const description = document.getElementById('story-description').value;
+            const genre = document.getElementById('story-genre').value;
+            const cover = document.getElementById('story-cover').value;
+            if (!title) { alert('Story title is required'); return; }
+            
+            checkStoryTitleExists(title).then((exists) => {
+                const currentStory = userStories.find(s => s.id === storyId);
+                if (exists && currentStory.title !== title) {
+                    alert('You already have a story with this title. Please use a different title.');
+                    return;
+                }
+                db.ref('books/' + storyId).update({
+                    title, description, genre, tags: storyTags, cover, updatedAt: new Date().toISOString()
+                }).then(() => {
+                    alert('Story updated successfully!');
+                    createStoryForm.reset();
+                    storyTags = [];
+                    updateTagsDisplay();
+                    createStoryForm.onsubmit = function(e) { e.preventDefault(); createStoryForm.dispatchEvent(new Event('submit')); };
+                    document.querySelector('#create-story-form button[type="submit"]').textContent = 'Create Story';
+                    showSection('my-stories');
+                    loadUserStories();
+                }).catch(error => alert('Error updating story: ' + error.message));
+            });
+        }
+
+        function deleteStory(storyId) {
+            showConfirmation('Delete Story', 'Are you sure you want to delete this story? This action cannot be undone.', () => {
+                db.ref('books/' + storyId).remove()
+                    .then(() => { alert('Story deleted successfully!'); loadUserStories(); })
+                    .catch(error => alert('Error deleting story: ' + error.message));
+            });
+        }
+
+        function manageChapters(storyId) {
+            currentStoryId = storyId;
+            const story = userStories.find(s => s.id === storyId);
+            if (story) {
+                document.getElementById('chapter-management-title').textContent = `Chapter Management: ${story.title}`;
+                loadStoryChapters(storyId);
+                showSection('chapter-management');
+            }
+        }
+
+        function loadStoryChapters(storyId) {
+            db.ref(`chapters/${storyId}`).on('value', (snapshot) => {
+                currentStoryChapters = [];
+                snapshot.forEach((childSnapshot) => {
+                    currentStoryChapters.push({
+                        id: childSnapshot.key,
+                        bookId: storyId,
+                        number: parseInt(childSnapshot.key),
+                        ...childSnapshot.val()
+                    });
+                });
+                displayStoryChapters();
+                updateChapterDraftsCount();
+            });
+        }
+
+        function displayStoryChapters() {
+            const container = document.getElementById('chapter-management-container');
+            if (currentStoryChapters.length === 0) {
+                container.innerHTML = `<div class="empty-state"><i class="fas fa-file-alt"></i><p>No chapters yet for this story</p><button class="btn btn-primary mt-3" onclick="showAddChapterForm()">Add First Chapter</button></div>`;
+                return;
+            }
+            let html = '<div class="chapter-list">';
+            currentStoryChapters.sort((a,b) => (a.number||0) - (b.number||0));
+            currentStoryChapters.forEach(ch => {
+                html += `
+                    <div class="chapter-item">
+                        <div class="chapter-info">
+                            <div class="chapter-title">Chapter ${ch.number}: ${escapeHtml(ch.title)}</div>
+                            <div class="chapter-meta">
+                                <span>Status: <span class="status ${ch.status}">${ch.status}</span></span>
+                                <span>Words: ${ch.content ? ch.content.split(/\s+/).length : 0}</span>
+                                <span>Created: ${new Date(ch.createdAt).toLocaleDateString()}</span>
+                            </div>
+                        </div>
+                        <div class="chapter-actions">
+                            <button class="chapter-action-btn edit" onclick="editChapter('${ch.number}', '${ch.bookId}')">Edit</button>
+                            <button class="chapter-action-btn delete" onclick="deleteChapter('${ch.number}', '${ch.bookId}')">Delete</button>
+                            ${ch.status !== 'published' ? `<button class="chapter-action-btn publish" onclick="publishChapter('${ch.number}', '${ch.bookId}')">Publish</button>` : ''}
+                        </div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        function showAddChapterForm() {
+            document.getElementById('chapter-form-title').textContent = 'Add New Chapter';
+            document.getElementById('chapter-id').value = '';
+            document.getElementById('chapter-story-id').value = currentStoryId;
+            document.getElementById('chapter-title').value = '';
+            document.getElementById('chapter-content').value = '';
+            document.getElementById('chapter-status').value = 'draft';
+            document.getElementById('chapter-schedule-date').value = '';
+            chapterForm.onsubmit = function(e) { e.preventDefault(); saveChapter(); };
+            showSection('chapter-form');
+        }
+
+        function editChapter(chapterNumber, bookId) {
+            const chapter = currentStoryChapters.find(c => c.number == chapterNumber && c.bookId === bookId);
+            if (chapter) {
+                document.getElementById('chapter-form-title').textContent = 'Edit Chapter';
+                document.getElementById('chapter-id').value = chapter.number;
+                document.getElementById('chapter-story-id').value = chapter.bookId;
+                document.getElementById('chapter-title').value = chapter.title;
+                document.getElementById('chapter-content').value = chapter.content || '';
+                document.getElementById('chapter-status').value = chapter.status || 'draft';
+                document.getElementById('chapter-schedule-date').value = chapter.scheduledDate || '';
+                chapterForm.onsubmit = function(e) { e.preventDefault(); saveChapter(); };
+                showSection('chapter-form');
+            }
+        }
+
+        function saveChapter() {
+            const chapterId = document.getElementById('chapter-id').value;
+            const storyId = document.getElementById('chapter-story-id').value;
+            const title = document.getElementById('chapter-title').value;
+            const content = document.getElementById('chapter-content').value;
+            const status = document.getElementById('chapter-status').value;
+            const scheduledDate = document.getElementById('chapter-schedule-date').value;
+
+            if (!title || !content) {
+                alert('Chapter title and content are required');
+                return;
+            }
+
+            let chapterNumber = 1;
+            if (currentStoryChapters.length > 0) {
+                const maxNum = Math.max(...currentStoryChapters.map(c => c.number || 0));
+                chapterNumber = maxNum + 1;
+            }
+
+            const chapterData = {
+                title, content, status, number: chapterNumber,
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString()
+            };
+            if (status === 'scheduled' && scheduledDate) chapterData.scheduledDate = scheduledDate;
+
+            let savePromise;
+            if (chapterId) {
+                savePromise = db.ref(`chapters/${storyId}/${chapterId}`).update(chapterData);
+            } else {
+                savePromise = db.ref(`chapters/${storyId}/${chapterNumber}`).set(chapterData);
+            }
+
+            savePromise.then(() => {
+                alert(chapterId ? 'Chapter updated!' : 'Chapter created!');
+                cancelChapterForm();
+                loadStoryChapters(storyId);
+            }).catch(error => alert('Error saving chapter: ' + error.message));
+        }
+
+        function deleteChapter(chapterNumber, bookId) {
+            showConfirmation('Delete Chapter', 'Are you sure you want to delete this chapter?', () => {
+                db.ref(`chapters/${bookId}/${chapterNumber}`).remove()
+                    .then(() => { alert('Chapter deleted'); loadStoryChapters(currentStoryId); })
+                    .catch(error => alert('Error: ' + error.message));
+            });
+        }
+
+        function publishChapter(chapterNumber, bookId) {
+            db.ref(`chapters/${bookId}/${chapterNumber}`).update({
+                status: 'published', publishedAt: new Date().toISOString(), updatedAt: new Date().toISOString()
+            }).then(() => { alert('Chapter published!'); loadStoryChapters(currentStoryId); })
+              .catch(error => alert('Error: ' + error.message));
+        }
+
+        function cancelChapterForm() {
+            showSection('chapter-management');
+        }
+
+        function updateChapterDraftsCount() {
+            let draftCount = 0;
+            if (currentStoryChapters) draftCount = currentStoryChapters.filter(ch => ch.status === 'draft').length;
+            document.getElementById('chapter-drafts-count').textContent = draftCount;
+            document.getElementById('drafts-count').textContent = draftCount;
+        }
+
+        // Comments (mock for demo - can be extended)
+        function loadComments() {
+            db.ref('comments').orderByChild('authorId').equalTo(currentUser ? currentUser.uid : '').once('value', (snap) => {
+                let count = 0;
+                snap.forEach(() => count++);
+                document.getElementById('comments-count').textContent = count;
+            });
+        }
+
+        // Modal confirmation
+        function showConfirmation(title, message, callback) {
+            confirmationTitle.textContent = title;
+            confirmationMessage.textContent = message;
+            confirmationModal.style.display = 'flex';
+            confirmOk.onclick = function() {
+                confirmationModal.style.display = 'none';
+                if (callback) callback();
+            };
+            confirmCancel.onclick = function() { confirmationModal.style.display = 'none'; };
+        }
+
+        function confirmLogout() {
+            showConfirmation('Logout', 'Are you sure you want to log out?', () => auth.signOut());
+        }
+
+        // Section navigation
+        function showSection(id) {
+            document.querySelectorAll('.content-section').forEach(section => section.style.display = 'none');
+            const target = document.getElementById(id);
+            if (target) target.style.display = 'block';
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            const titles = {
+                'dashboard':'Author Dashboard','create-story':'Create New Story','my-stories':'My Stories',
+                'chapter-drafts':'Chapter Drafts','chapter-management':'Chapter Management','chapter-form':'Chapter Form',
+                'profile-settings':'Profile Settings','reader-comments':'Reader Comments','story-analytics':'Story Analytics',
+                'publishing-schedule':'Publishing Schedule','story-settings':'Story Settings','tags-genres':'Tags & Genres',
+                'writing-guide':'Writing Guide','author-community':'Author Community','author-support':'Author Support'
+            };
+            document.getElementById('panel-title').textContent = titles[id] || 'Author Dashboard';
+        }
+
+        // Toggle schedule date visibility
+        document.getElementById('chapter-status')?.addEventListener('change', function() {
+            const group = document.getElementById('schedule-date-group');
+            if (group) group.style.display = this.value === 'scheduled' ? 'block' : 'none';
+        });
+
+        // Register event listeners for switching screens
+        showRegister.addEventListener('click', (e) => { e.preventDefault(); showRegisterScreen(); });
+        showLogin.addEventListener('click', (e) => { e.preventDefault(); showLoginScreen(); });
+    </script>
 </body>
 </html>
