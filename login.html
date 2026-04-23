@@ -107,9 +107,9 @@
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 
   <script>
-    // Your Firebase configuration (same as index.html)
+    // Updated Firebase config with new API key
     const firebaseConfig = {
-      apiKey: "AIzaSyAPEzboghpjuqODmwjwM7IHl9KPUl4Xm-U",
+      apiKey: "AIzaSyBIums2N8B9AcAqwbstg1eVOOGsJZXrnPU",
       authDomain: "readaura.firebaseapp.com",
       databaseURL: "https://readaura-default-rtdb.firebaseio.com",
       projectId: "readaura",
@@ -165,7 +165,6 @@
 
       try {
         await auth.signInWithEmailAndPassword(email, password);
-        // Redirect to homepage after successful login
         window.location.href = 'index.html';
       } catch (error) {
         console.error(error);
@@ -187,7 +186,7 @@
       }
     }
 
-    // Sign Up function (creates auth + stores firstName, gender)
+    // Sign Up function
     async function signUp() {
       const firstName = document.getElementById('signup-firstname').value.trim();
       const gender = document.querySelector('input[name="gender"]:checked').value;
@@ -208,11 +207,9 @@
       }
 
       try {
-        // 1. Create user with email & password
         const userCredential = await auth.createUserWithEmailAndPassword(email, password);
         const user = userCredential.user;
 
-        // 2. Save extra profile data to Realtime Database
         await db.ref('users/' + user.uid).set({
           firstName: firstName,
           gender: gender,
@@ -220,7 +217,6 @@
           createdAt: firebase.database.ServerValue.TIMESTAMP
         });
 
-        // 3. Redirect to homepage
         window.location.href = 'index.html';
       } catch (error) {
         console.error(error);
@@ -234,7 +230,7 @@
       }
     }
 
-    // If a user is already signed in (e.g., they clicked back), redirect to index
+    // If already signed in, go to index
     auth.onAuthStateChanged((user) => {
       if (user) {
         window.location.href = 'index.html';
