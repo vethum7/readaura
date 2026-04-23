@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ReadAura - Sign In / Sign Up</title>
+  <!-- Tailwind CSS + Font Awesome -->
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    .card {
+      backdrop-filter: blur(10px);
+      background-color: rgba(255, 255, 255, 0.95);
+    }
+    .tab-active {
+      border-bottom: 2px solid #8b5cf6;
+      color: #8b5cf6;
+    }
+  </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+  <div class="card w-full max-w-md rounded-2xl shadow-2xl p-6 md:p-8 transition-all">
+    <div class="text-center mb-6">
+      <img src="https://i.imgur.com/8WN9Od9.png" alt="ReadAura Logo" class="h-12 mx-auto mb-2">
+      <h1 class="text-2xl font-bold text-gray-800">ReadAura</h1>
+      <p class="text-gray-500 text-sm">Explore thousands of books</p>
+    </div>
+
+    <!-- Tabs -->
+    <div class="flex border-b border-gray-200 mb-6">
+      <button id="signin-tab" class="flex-1 py-2 text-center font-semibold text-purple-600 border-b-2 border-purple-600 transition">
+        Sign In
+      </button>
+      <button id="signup-tab" class="flex-1 py-2 text-center font-semibold text-gray-500 transition">
+        Create Account
+      </button>
+    </div>
+
+    <!-- Sign In Form -->
+    <div id="signin-form">
+      <div class="mb-4">
+        <label class="block text-gray-700 text-sm font-bold mb-2">Email Address</label>
+        <input type="email" id="login-email" placeholder="you@example.com" 
+               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+      </div>
+      <div class="mb-6">
+        <label class="block text-gray-700 text-sm font-bold mb-2">Password</label>
+        <input type="password" id="login-password" placeholder="••••••••" 
+               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+      </div>
+      <button onclick="signIn()" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 rounded-lg transition duration-200">
+        <i class="fas fa-sign-in-alt mr-2"></i>Sign In
+      </button>
+      <p class="text-center text-sm text-gray-500 mt-4">
+        New here? <button onclick="switchToSignUp()" class="text-purple-600 hover:underline">Create an account</button>
+      </p>
+    </div>
+
+    <!-- Sign Up Form (hidden initially) -->
+    <div id="signup-form" class="hidden">
+      <div class="mb-4">
+        <label class="block text-gray-700 text-sm font-bold mb-2">First Name</label>
+        <input type="text" id="signup-firstname" placeholder="John" 
+               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+      </div>
+      <div class="mb-4">
+        <label class="block text-gray-700 text-sm font-bold mb-2">Gender</label>
+        <div class="flex space-x-4">
+          <label class="inline-flex items-center">
+            <input type="radio" name="gender" value="male" checked class="form-radio text-purple-600">
+            <span class="ml-2"><i class="fas fa-mars text-blue-500"></i> Male</span>
+          </label>
+          <label class="inline-flex items-center">
+            <input type="radio" name="gender" value="female" class="form-radio text-purple-600">
+            <span class="ml-2"><i class="fas fa-venus text-pink-500"></i> Female</span>
+          </label>
+        </div>
+      </div>
+      <div class="mb-4">
+        <label class="block text-gray-700 text-sm font-bold mb-2">Email Address</label>
+        <input type="email" id="signup-email" placeholder="you@example.com" 
+               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+      </div>
+      <div class="mb-6">
+        <label class="block text-gray-700 text-sm font-bold mb-2">Password</label>
+        <input type="password" id="signup-password" placeholder="at least 6 characters" 
+               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+      </div>
+      <button onclick="signUp()" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 rounded-lg transition duration-200">
+        <i class="fas fa-user-plus mr-2"></i>Sign Up
+      </button>
+      <p class="text-center text-sm text-gray-500 mt-4">
+        Already have an account? <button onclick="switchToSignIn()" class="text-purple-600 hover:underline">Sign in</button>
+      </p>
+    </div>
+
+    <!-- Message area for errors/success -->
+    <div id="message" class="mt-4 text-center text-sm text-red-500"></div>
+  </div>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+
+  <script>
+    // Your Firebase configuration (same as index.html)
+    const firebaseConfig = {
+      apiKey: "AIzaSyAPEzboghpjuqODmwjwM7IHl9KPUl4Xm-U",
+      authDomain: "readaura.firebaseapp.com",
+      databaseURL: "https://readaura-default-rtdb.firebaseio.com",
+      projectId: "readaura",
+      storageBucket: "readaura.appspot.com",
+      messagingSenderId: "824392534073",
+      appId: "1:824392534073:web:dfa30e0e40fa540f16a5e8",
+      measurementId: "G-G6SWNJQYR5"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.database();
+
+    // Tab switching functions
+    const signinTab = document.getElementById('signin-tab');
+    const signupTab = document.getElementById('signup-tab');
+    const signinForm = document.getElementById('signin-form');
+    const signupForm = document.getElementById('signup-form');
+    const messageDiv = document.getElementById('message');
+
+    function switchToSignIn() {
+      signinForm.classList.remove('hidden');
+      signupForm.classList.add('hidden');
+      signinTab.classList.add('tab-active', 'border-purple-600', 'text-purple-600');
+      signinTab.classList.remove('text-gray-500');
+      signupTab.classList.remove('tab-active', 'border-purple-600', 'text-purple-600');
+      signupTab.classList.add('text-gray-500');
+      messageDiv.innerText = '';
+    }
+
+    function switchToSignUp() {
+      signupForm.classList.remove('hidden');
+      signinForm.classList.add('hidden');
+      signupTab.classList.add('tab-active', 'border-purple-600', 'text-purple-600');
+      signupTab.classList.remove('text-gray-500');
+      signinTab.classList.remove('tab-active', 'border-purple-600', 'text-purple-600');
+      signinTab.classList.add('text-gray-500');
+      messageDiv.innerText = '';
+    }
+
+    signinTab.onclick = switchToSignIn;
+    signupTab.onclick = switchToSignUp;
+
+    // Sign In function
+    async function signIn() {
+      const email = document.getElementById('login-email').value.trim();
+      const password = document.getElementById('login-password').value;
+
+      if (!email || !password) {
+        messageDiv.innerText = 'Please enter both email and password.';
+        return;
+      }
+
+      try {
+        await auth.signInWithEmailAndPassword(email, password);
+        // Redirect to homepage after successful login
+        window.location.href = 'index.html';
+      } catch (error) {
+        console.error(error);
+        let errorMsg = 'Sign in failed. ';
+        switch (error.code) {
+          case 'auth/user-not-found':
+            errorMsg += 'No account found with this email.';
+            break;
+          case 'auth/wrong-password':
+            errorMsg += 'Incorrect password.';
+            break;
+          case 'auth/invalid-email':
+            errorMsg += 'Invalid email format.';
+            break;
+          default:
+            errorMsg += error.message;
+        }
+        messageDiv.innerText = errorMsg;
+      }
+    }
+
+    // Sign Up function (creates auth + stores firstName, gender)
+    async function signUp() {
+      const firstName = document.getElementById('signup-firstname').value.trim();
+      const gender = document.querySelector('input[name="gender"]:checked').value;
+      const email = document.getElementById('signup-email').value.trim();
+      const password = document.getElementById('signup-password').value;
+
+      if (!firstName) {
+        messageDiv.innerText = 'Please enter your first name.';
+        return;
+      }
+      if (!email || !password) {
+        messageDiv.innerText = 'Please enter email and password.';
+        return;
+      }
+      if (password.length < 6) {
+        messageDiv.innerText = 'Password must be at least 6 characters.';
+        return;
+      }
+
+      try {
+        // 1. Create user with email & password
+        const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+        const user = userCredential.user;
+
+        // 2. Save extra profile data to Realtime Database
+        await db.ref('users/' + user.uid).set({
+          firstName: firstName,
+          gender: gender,
+          email: email,
+          createdAt: firebase.database.ServerValue.TIMESTAMP
+        });
+
+        // 3. Redirect to homepage
+        window.location.href = 'index.html';
+      } catch (error) {
+        console.error(error);
+        let errorMsg = 'Sign up failed. ';
+        if (error.code === 'auth/email-already-in-use') {
+          errorMsg += 'This email is already registered. Please sign in instead.';
+        } else {
+          errorMsg += error.message;
+        }
+        messageDiv.innerText = errorMsg;
+      }
+    }
+
+    // If a user is already signed in (e.g., they clicked back), redirect to index
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        window.location.href = 'index.html';
+      }
+    });
+  </script>
+</body>
+</html>
