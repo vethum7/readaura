@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ReadAura — Read Online</title>
 
-  <!-- Favicon Added -->
+  <!-- Favicon -->
   <link rel="icon" type="image/png" href="https://i.imgur.com/8WN9Od9.png">
 
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2883257010372888"
@@ -66,7 +66,15 @@
           class="bg-transparent outline-none w-full text-sm" oninput="searchBooks()">
       </div>
 
-      <button id="auth-btn" class="bg-purple-600 text-white px-3 py-1 rounded" onclick="toggleAuth()">
+      <!-- Profile area (shown when logged in) -->
+      <div id="user-profile" class="hidden flex items-center space-x-2 bg-gray-100 px-3 py-1 rounded">
+        <div id="avatar-shadow" class="text-xl"></div>
+        <span id="user-firstname" class="text-sm font-semibold"></span>
+        <button onclick="signOut()" class="text-xs text-red-500 ml-1 hover:underline">Logout</button>
+      </div>
+
+      <!-- Sign In button (shown when logged out) -->
+      <button id="auth-btn" class="bg-purple-600 text-white px-3 py-1 rounded" onclick="window.location.href='login.html'">
         Sign In
       </button>
     </div>
@@ -131,6 +139,49 @@
     let currentBookId = null;
     let bookmarks = [];
 
+    // ------------------- PROFILE & AUTH UI -------------------
+    function signOut() {
+      auth.signOut();
+    }
+
+    // Update UI based on auth state + load profile from DB
+    auth.onAuthStateChanged(async (user) => {
+      const profileDiv = document.getElementById('user-profile');
+      const authBtn = document.getElementById('auth-btn');
+
+      if (user) {
+        // Fetch profile from Realtime Database (firstName, gender)
+        const snapshot = await db.ref('users/' + user.uid).once('value');
+        const profile = snapshot.val();
+
+        if (profile && profile.firstName) {
+          // Show profile area, hide sign-in button
+          profileDiv.classList.remove('hidden');
+          authBtn.classList.add('hidden');
+
+          document.getElementById('user-firstname').innerText = profile.firstName;
+
+          // Set gender-based shadow avatar (using Font Awesome icons)
+          const shadowDiv = document.getElementById('avatar-shadow');
+          if (profile.gender === 'male') {
+            shadowDiv.innerHTML = '<i class="fas fa-user-astronaut fa-lg text-purple-700"></i>';
+          } else if (profile.gender === 'female') {
+            shadowDiv.innerHTML = '<i class="fas fa-user-circle fa-lg text-pink-500"></i>';
+          } else {
+            shadowDiv.innerHTML = '<i class="fas fa-user fa-lg text-gray-500"></i>';
+          }
+        } else {
+          // User exists in Auth but missing profile – redirect to complete profile page
+          window.location.href = 'complete-profile.html';
+        }
+      } else {
+        // No user: hide profile, show sign-in button
+        profileDiv.classList.add('hidden');
+        authBtn.classList.remove('hidden');
+      }
+    });
+
+    // ------------------- ORIGINAL FUNCTIONS (unchanged) -------------------
     function loadLogo() {
       db.ref("site/logo").on("value", snap => {
         const logoUrl = snap.val();
@@ -206,14 +257,9 @@
     }
 
     function toggleAuth() {
-      if (auth.currentUser) auth.signOut();
-      else auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
+      // Replaced by direct redirect to login.html
+      window.location.href = 'login.html';
     }
-
-    auth.onAuthStateChanged(user => {
-      document.getElementById("auth-btn").innerText = user ? "Sign Out" : "Sign In";
-      if (user) loadBookmarks();
-    });
 
     function toggleBookmark() {
       if (!auth.currentUser || !currentBookId) return;
@@ -309,9 +355,11 @@
       });
     }
 
+    // Initialization
     loadLogo();
     loadBooks();
 
+    // Check for book ID in URL
     const params = new URLSearchParams(window.location.search);
     const bookId = params.get("id");
 
