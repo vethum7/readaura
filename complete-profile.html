@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Complete Your Profile - ReadAura</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    .card {
+      backdrop-filter: blur(10px);
+      background-color: rgba(255, 255, 255, 0.95);
+    }
+  </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+  <div class="card w-full max-w-md rounded-2xl shadow-2xl p-6 md:p-8">
+    <div class="text-center mb-6">
+      <img src="https://i.imgur.com/8WN9Od9.png" alt="ReadAura Logo" class="h-12 mx-auto mb-2">
+      <h1 class="text-2xl font-bold text-gray-800">Complete Your Profile</h1>
+      <p class="text-gray-500 text-sm mt-1">Just one more step to personalize your experience</p>
+    </div>
+
+    <div class="mb-4">
+      <label class="block text-gray-700 text-sm font-bold mb-2">First Name</label>
+      <input type="text" id="firstName" placeholder="Enter your first name" 
+             class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+    </div>
+
+    <div class="mb-6">
+      <label class="block text-gray-700 text-sm font-bold mb-2">Gender</label>
+      <div class="flex space-x-4">
+        <label class="inline-flex items-center">
+          <input type="radio" name="gender" value="male" checked class="form-radio text-purple-600">
+          <span class="ml-2"><i class="fas fa-mars text-blue-500"></i> Male</span>
+        </label>
+        <label class="inline-flex items-center">
+          <input type="radio" name="gender" value="female" class="form-radio text-purple-600">
+          <span class="ml-2"><i class="fas fa-venus text-pink-500"></i> Female</span>
+        </label>
+      </div>
+    </div>
+
+    <button onclick="saveProfile()" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 rounded-lg transition duration-200">
+      <i class="fas fa-save mr-2"></i>Save & Continue
+    </button>
+
+    <div id="message" class="mt-4 text-center text-sm text-red-500"></div>
+  </div>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+
+  <script>
+    // Your Firebase config (same as in index.html)
+    const firebaseConfig = {
+      apiKey: "AIzaSyBIums2N8B9AcAqwbstg1eVOOGsJZXrnPU",
+      authDomain: "readaura.firebaseapp.com",
+      databaseURL: "https://readaura-default-rtdb.firebaseio.com",
+      projectId: "readaura",
+      storageBucket: "readaura.appspot.com",
+      messagingSenderId: "824392534073",
+      appId: "1:824392534073:web:dfa30e0e40fa540f16a5e8",
+      measurementId: "G-G6SWNJQYR5"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.database();
+
+    // Ensure user is logged in; if not, send to login page
+    auth.onAuthStateChanged((user) => {
+      if (!user) {
+        window.location.href = 'login.html';
+      }
+    });
+
+    async function saveProfile() {
+      const user = auth.currentUser;
+      if (!user) {
+        window.location.href = 'login.html';
+        return;
+      }
+
+      const firstName = document.getElementById('firstName').value.trim();
+      const gender = document.querySelector('input[name="gender"]:checked').value;
+
+      if (!firstName) {
+        document.getElementById('message').innerText = 'Please enter your first name.';
+        return;
+      }
+
+      try {
+        // Save profile data to Realtime Database under /users/{uid}
+        await db.ref('users/' + user.uid).set({
+          firstName: firstName,
+          gender: gender,
+          email: user.email,
+          createdAt: firebase.database.ServerValue.TIMESTAMP
+        });
+        // Redirect to homepage where the profile will now appear
+        window.location.href = 'index.html';
+      } catch (error) {
+        console.error(error);
+        document.getElementById('message').innerText = 'Failed to save profile: ' + error.message;
+      }
+    }
+  </script>
+</body>
+</html>
