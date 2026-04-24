@@ -1,19 +1,53 @@
-<!DOCTYPE html>  
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Become an Author — ReadAura</title>
 
-  <!-- ✅ Favicon Added -->
+  <!-- Favicon -->
   <link rel="icon" type="image/png" href="https://i.imgur.com/8WN9Od9.png">
 
+  <!-- Tailwind CSS -->
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-</head>
-<body class="bg-gray-50 text-gray-800">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
+  <style>
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background-color: white;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body class="bg-gray-50 font-sans text-gray-800">
+
+  <!-- ========== HEADER (same as index.html) ========== -->
+  <header class="p-3 flex items-center justify-between">
+    <div class="flex items-center space-x-4">
+      <div id="logo" class="cursor-pointer flex items-center" onclick="window.location.href='index.html'">
+        <img src="https://i.imgur.com/8WN9Od9.png" alt="ReadAura Logo" class="h-10 w-auto rounded">
+      </div>
+      <button onclick="window.location.href='top-novels.html'" class="text-purple-600 font-semibold hover:underline whitespace-nowrap">
+        Top Novels
+      </button>
+      <button onclick="window.location.href='become-an-author.html'" class="text-purple-600 font-semibold hover:underline whitespace-nowrap">
+        Become an Author
+      </button>
+    </div>
+    <div class="flex items-center space-x-2">
+      <div class="flex items-center bg-gray-100 px-3 py-1 rounded w-48 sm:w-64">
+        <i class="fas fa-search text-gray-500 mr-2"></i>
+        <input id="search-input" type="text" placeholder="Search books..." class="bg-transparent outline-none w-full text-sm">
+      </div>
+    </div>
+  </header>
+
+  <!-- ========== MAIN CONTENT ========== -->
   <section class="max-w-5xl mx-auto px-6 py-16">
-    <h1 class="text-4xl font-bold text-center text-orange-600 mb-8">📘 Become an Author</h1>
+    <h1 class="text-4xl font-bold text-center text-purple-600 mb-8">📘 Become an Author</h1>
     <p class="text-center text-lg mb-12 text-gray-700">
       Turn your imagination into inspiration.  
       Publish your stories on <span class="font-semibold">ReadAura</span> — reach readers, grow your fanbase, and even earn from your affiliate links!
@@ -21,7 +55,7 @@
 
     <!-- Why Publish -->
     <div class="bg-white shadow-md rounded-2xl p-8 mb-10">
-      <h2 class="text-2xl font-semibold text-orange-500 mb-4">✨ Why Publish on ReadAura?</h2>
+      <h2 class="text-2xl font-semibold text-purple-500 mb-4">✨ Why Publish on ReadAura?</h2>
       <p class="mb-3">
         ReadAura is a free reading platform where readers from around the world discover new stories every day.  
         We help authors grow their audience, build recognition, and even earn through affiliate links — all for free.
@@ -35,8 +69,8 @@
     </div>
 
     <!-- Affiliate Section -->
-    <div class="bg-orange-50 border-l-4 border-orange-400 p-6 rounded-xl mb-10">
-      <h2 class="text-2xl font-semibold text-orange-600 mb-3">💰 Earn Through Affiliate Links</h2>
+    <div class="bg-blue-50 border-l-4 border-blue-400 p-6 rounded-xl mb-10">
+      <h2 class="text-2xl font-semibold text-blue-600 mb-3">💰 Earn Through Affiliate Links</h2>
       <p class="mb-3">
         Unlike most free reading platforms, <strong>ReadAura</strong> lets you include your own affiliate links at the end of every chapter.
         You can earn when readers click your links and buy related products.
@@ -53,26 +87,26 @@
 
     <!-- Getting Started -->
     <div class="bg-white shadow-md rounded-2xl p-8 mb-10">
-      <h2 class="text-2xl font-semibold text-orange-500 mb-4">🚀 How to Get Started</h2>
+      <h2 class="text-2xl font-semibold text-purple-500 mb-4">🚀 How to Get Started</h2>
       <ol class="list-decimal pl-6 space-y-2">
+        <li>Read and accept the <strong>Author Agreement</strong> (next step).</li>
         <li>Prepare your story file (Word, PDF, or text).</li>
         <li>Include your affiliate links at the end of each chapter (optional).</li>
-        <li>Create your author account and upload your story.</li>
-        <li>We’ll review it and publish it on ReadAura.</li>
+        <li>Upload your story through the Author Dashboard.</li>
       </ol>
 
-      <!-- Updated Button -->
+      <!-- Button now goes to Author Agreement page -->
       <div class="text-center mt-8">
-        <a href="https://readaura.xyz/5Authordashboard.html"
-           class="inline-block bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 px-6 rounded-full shadow-lg transition">
-          📩 Submit Your Story
+        <a href="author-agreement.html"
+           class="inline-block bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 px-6 rounded-full shadow-lg transition">
+          📄 Read & Accept Author Agreement
         </a>
       </div>
     </div>
 
     <!-- Rules -->
     <div class="bg-gray-100 p-8 rounded-2xl mb-10">
-      <h2 class="text-2xl font-semibold text-orange-500 mb-4">🧾 Affiliate Link & Content Rules</h2>
+      <h2 class="text-2xl font-semibold text-purple-500 mb-4">🧾 Affiliate Link & Content Rules</h2>
       <p class="mb-3">To keep ReadAura a safe and trusted platform, please follow these simple rules:</p>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
@@ -94,21 +128,36 @@
       </div>
     </div>
 
-    <!-- Join Section -->
-    <div class="bg-orange-500 p-10 rounded-2xl text-center shadow-lg">
-      <h2 class="text-3xl font-bold mb-4 text-black">🌟 Join the ReadAura Author Community</h2>
-      <p class="max-w-2xl mx-auto mb-6 text-lg text-black">
+    <!-- Join Section (now BLUE) -->
+    <div class="bg-blue-600 p-10 rounded-2xl text-center shadow-lg">
+      <h2 class="text-3xl font-bold mb-4 text-white">🌟 Join the ReadAura Author Community</h2>
+      <p class="max-w-2xl mx-auto mb-6 text-lg text-white">
         Publish your stories for free, grow your reader base, and earn through your affiliate links.  
         Your words deserve to be read.
       </p>
-
-      <!-- Updated Button -->
-      <a href="https://readaura.xyz/5Authordashboard.html"
-         class="bg-white text-black font-semibold py-3 px-6 rounded-full hover:bg-gray-100 transition">
+      <a href="author-agreement.html"
+         class="bg-white text-purple-600 font-semibold py-3 px-6 rounded-full hover:bg-gray-100 transition">
         📖 Start Publishing
       </a>
     </div>
   </section>
 
+  <!-- ========== FOOTER (same as index.html) ========== -->
+  <footer class="bg-gray-200 text-gray-700 p-4 mt-8 text-center">
+    <a href="index.html" class="text-purple-600 hover:underline mx-2">Home</a> |
+    <a href="about.html" class="text-purple-600 hover:underline mx-2">About Us</a> |
+    <a href="privacy.html" class="text-purple-600 hover:underline mx-2">Privacy Policy</a> |
+    <a href="terms.html" class="text-purple-600 hover:underline mx-2">Terms of Service</a>
+    <p class="mt-2 text-sm">&copy; 2026 ReadAura. All rights reserved.</p>
+  </footer>
+
+  <script>
+    // Simple search redirect (optional)
+    document.getElementById('search-input')?.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        window.location.href = `index.html?search=${encodeURIComponent(this.value)}`;
+      }
+    });
+  </script>
 </body>
 </html>
