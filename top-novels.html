@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Top Novels — ReadAura</title>
 
-  <!-- ✅ Favicon -->
+  <!-- Favicon -->
   <link rel="icon" type="image/png" href="https://i.imgur.com/8WN9Od9.png">
 
   <!-- Google AdSense -->
@@ -62,8 +62,8 @@
 
   <!-- Main -->
   <main class="container mx-auto p-6 mt-6">
-    <h1 class="text-2xl font-bold mb-4 text-center">🏆 Weekly Top Novels</h1>
-    <p class="text-gray-500 text-center mb-8">Updated every week based on total views.</p>
+    <h1 class="text-2xl font-bold mb-4 text-center">🏆 All‑Time Top Novels</h1>
+    <p class="text-gray-500 text-center mb-8">Ranked by total views (all time).</p>
 
     <!-- Top Novels List -->
     <div id="top-novels-list" class="space-y-4">
@@ -84,9 +84,9 @@
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 
   <script>
-    // Firebase Config
+    // Firebase Config (updated to match your latest API key)
     const firebaseConfig = {
-      apiKey: "AIzaSyA6-ATQLe_1n-GLzeXelqoO7Rm_WRXGR68",
+      apiKey: "AIzaSyBIums2N8B9AcAqwbstg1eVOOGsJZXrnPU",
       authDomain: "readaura.firebaseapp.com",
       databaseURL: "https://readaura-default-rtdb.firebaseio.com",
       projectId: "readaura",
@@ -117,7 +117,7 @@
       });
     }
 
-    // LOAD TOP NOVELS
+    // LOAD TOP NOVELS BY TOTAL VIEWS
     function loadTopNovels() {
       const list = document.getElementById("top-novels-list");
       db.ref("books").on("value", snap => {
@@ -134,11 +134,12 @@
             title: data.title || "Untitled Novel",
             author: data.author || "Unknown Author",
             cover: data.cover || "https://via.placeholder.com/150?text=No+Cover",
-            weeklyViews: data.weeklyViews || 0
+            totalViews: data.views || 0     // ← CHANGED: use total 'views'
           });
         });
 
-        novels.sort((a, b) => b.weeklyViews - a.weeklyViews);
+        // Sort by total views (descending)
+        novels.sort((a, b) => b.totalViews - a.totalViews);
 
         list.innerHTML = "";
         novels.forEach((novel, index) => {
@@ -152,9 +153,9 @@
             <div class="text-3xl font-bold text-yellow-500 w-10 text-center">${rank}</div>
             <img src="${novel.cover}" alt="${novel.title}" class="w-20 h-28 object-cover rounded-lg mx-4 border">
             <div class="flex-1">
-              <h3 class="text-lg font-semibold text-gray-800">${novel.title}</h3>
-              <p class="text-sm text-gray-600">by ${novel.author}</p>
-              <p class="text-gray-700 mt-1"><span class="font-medium">${novel.weeklyViews}</span> views this week</p>
+              <h3 class="text-lg font-semibold text-gray-800">${escapeHtml(novel.title)}</h3>
+              <p class="text-sm text-gray-600">by ${escapeHtml(novel.author)}</p>
+              <p class="text-gray-700 mt-1"><span class="font-medium">${novel.totalViews.toLocaleString()}</span> total views</p>
             </div>
             <i class="fa-solid fa-angle-right text-gray-400 text-xl"></i>
           `;
@@ -163,11 +164,22 @@
       });
     }
 
+    // Helper to escape HTML (security)
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str.replace(/[&<>]/g, function(m) {
+        if (m === '&') return '&amp;';
+        if (m === '<') return '&lt;';
+        if (m === '>') return '&gt;';
+        return m;
+      });
+    }
+
     function openNovel(bookId) {
       window.location.href = `book.html?id=${encodeURIComponent(bookId)}`;
     }
 
-    // AUTH SYSTEM
+    // AUTH SYSTEM (kept as original Google sign‑in – you can change later)
     function toggleAuth() {
       if (auth.currentUser) auth.signOut();
       else auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
