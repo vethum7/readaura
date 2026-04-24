@@ -1592,7 +1592,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 
     <script>
-        // ==================== FIREBASE CONFIGURATION (UPDATED) ====================
+        // ==================== FIREBASE CONFIGURATION ====================
         const firebaseConfig = {
             apiKey: "AIzaSyBIums2N8B9AcAqwbstg1eVOOGsJZXrnPU",
             authDomain: "readaura.firebaseapp.com",
@@ -1634,10 +1634,44 @@
         let storyTags = [];
         let userProfile = {};
 
-        // Check if user is already logged in
-        firebase.auth().onAuthStateChanged((user) => {
+        // ==================== UPDATED AUTH STATE HANDLER (with agreement check) ====================
+        firebase.auth().onAuthStateChanged(async (user) => {
             if (user) {
                 currentUser = user;
+
+                // 1. Check if agreement already accepted in /authors/{uid}
+                const authorSnap = await db.ref('authors/' + user.uid).once('value');
+                const authorData = authorSnap.val();
+
+                let agreementOk = false;
+                if (authorData && authorData.agreementAccepted === true) {
+                    agreementOk = true;
+                } else {
+                    // 2. Check if user is an existing author (has any stories in /books)
+                    const booksSnap = await db.ref('books')
+                        .orderByChild('authorId')
+                        .equalTo(user.uid)
+                        .once('value');
+                    
+                    if (booksSnap.exists()) {
+                        // Existing author – automatically create legacy agreement record
+                        await db.ref('authors/' + user.uid).set({
+                            userId: user.uid,
+                            fullLegalName: user.displayName || user.email,
+                            email: user.email,
+                            agreementAccepted: true,
+                            legacyAuthor: true,
+                            acceptedAt: firebase.database.ServerValue.TIMESTAMP
+                        });
+                        agreementOk = true;
+                    } else {
+                        // New author – must sign agreement
+                        window.location.href = 'author-agreement.html';
+                        return;
+                    }
+                }
+
+                // If we reach here, agreement is OK – show dashboard
                 showAuthorDashboard(user);
                 loadUserProfile();
                 loadUserStories();
