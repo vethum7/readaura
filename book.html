@@ -5,14 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Book — ReadAura</title>
 
-  <!-- Favicon Added -->
+  <!-- Favicon -->
   <link rel="icon" type="image/png" href="https://i.imgur.com/8WN9Od9.png">
 
   <!-- Google AdSense -->
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2883257010372888"
     crossorigin="anonymous"></script>
 
-  <!-- Tailwind CSS -->
+  <!-- Tailwind CSS + Font Awesome -->
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
@@ -30,11 +30,17 @@
     .chapter-card:hover {
       background-color: #f3f4f6;
     }
+    #load-more-btn {
+      transition: all 0.2s;
+    }
+    #load-more-btn:hover {
+      background-color: #7c3aed;
+    }
   </style>
 </head>
 <body class="bg-gray-50 font-sans text-gray-800">
 
-  <!-- Header -->
+  <!-- ========== HEADER (identical to index.html) ========== -->
   <header class="p-3 flex items-center justify-between">
     <div class="flex items-center space-x-4">
       <div id="logo" class="cursor-pointer flex items-center" onclick="goHome()">
@@ -47,19 +53,29 @@
         Become an Author
       </button>
     </div>
+
     <div class="flex items-center space-x-2">
       <div class="flex items-center bg-gray-100 px-3 py-1 rounded w-48 sm:w-64">
         <i class="fas fa-search text-gray-500 mr-2"></i>
-        <input id="search-input" type="text" placeholder="Search novels..." 
+        <input id="search-input" type="text" placeholder="Search chapters..." 
           class="bg-transparent outline-none w-full text-sm" oninput="searchChapters()">
       </div>
-      <button id="auth-btn" class="bg-purple-600 text-white px-3 py-1 rounded" onclick="toggleAuth()">
+
+      <!-- Profile area (shown when logged in) -->
+      <div id="user-profile" class="hidden flex items-center space-x-2 bg-gray-100 px-3 py-1 rounded">
+        <div id="avatar-shadow" class="text-xl"></div>
+        <span id="user-firstname" class="text-sm font-semibold"></span>
+        <button onclick="signOut()" class="text-xs text-red-500 ml-1 hover:underline">Logout</button>
+      </div>
+
+      <!-- Sign In button (shown when logged out) -->
+      <button id="auth-btn" class="bg-purple-600 text-white px-3 py-1 rounded" onclick="window.location.href='login.html'">
         Sign In
       </button>
     </div>
   </header>
 
-  <!-- Book Section -->
+  <!-- ========== BOOK DETAIL SECTION ========== -->
   <main class="container mx-auto p-6">
     <div id="book-detail" class="bg-white rounded-lg shadow-lg p-6">
       <div class="flex flex-col md:flex-row">
@@ -71,12 +87,10 @@
           <p id="book-status" class="text-gray-600 mb-1">Status: Ongoing</p>
           <p id="book-updated" class="text-gray-500 text-sm mb-3">Last updated: Just now</p>
 
-          <!-- TAGS -->
+          <!-- Tags -->
           <div id="book-tags" class="mt-2 mb-4">
             <h3 class="text-md font-semibold mb-1">Tags:</h3>
-            <div id="tags-container" class="flex flex-wrap gap-2">
-              <!-- Tags will be inserted here -->
-            </div>
+            <div id="tags-container" class="flex flex-wrap gap-2"></div>
           </div>
 
           <div class="flex space-x-3 mt-3">
@@ -85,40 +99,45 @@
         </div>
       </div>
 
-      <!-- Book Description -->
+      <!-- Description -->
       <section class="mt-8">
         <h2 class="text-xl font-semibold border-b pb-2 mb-3">Book Description</h2>
-        <p id="book-summary" class="text-gray-700 leading-relaxed">
-          Loading description...
-        </p>
+        <p id="book-summary" class="text-gray-700 leading-relaxed">Loading description...</p>
       </section>
 
-      <!-- Chapters -->
+      <!-- Chapters (preload first 28, then load more) -->
       <section class="mt-8">
         <h2 class="text-xl font-semibold border-b pb-2 mb-3">Chapters</h2>
         <div id="chapter-list" class="space-y-2 max-h-96 overflow-y-auto">
           <p class="text-gray-500 text-sm">Loading chapters...</p>
         </div>
+        <div id="load-more-container" class="text-center mt-4 hidden">
+          <button id="load-more-btn" class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 transition">
+            Load More Chapters
+          </button>
+        </div>
       </section>
     </div>
   </main>
 
-  <!-- Footer -->
-  <footer class="bg-gray-900 text-white py-6 mt-10">
-    <div class="container mx-auto text-center text-sm">
-      &copy; 2025 ReadAura. All rights reserved.
-    </div>
+  <!-- ========== FOOTER (identical to index.html) ========== -->
+  <footer class="bg-gray-200 text-gray-700 p-4 mt-8 text-center">
+    <a href="index.html" class="text-purple-600 hover:underline mx-2">Home</a> |
+    <a href="about.html" class="text-purple-600 hover:underline mx-2">About Us</a> |
+    <a href="privacy.html" class="text-purple-600 hover:underline mx-2">Privacy Policy</a> |
+    <a href="terms.html" class="text-purple-600 hover:underline mx-2">Terms of Service</a>
+    <p class="mt-2 text-sm">&copy; 2026 ReadAura. All rights reserved.</p>
   </footer>
 
-  <!-- Firebase -->
+  <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 
   <script>
-    // ---------- Firebase config (same as your index) ----------
+    // ========== FIREBASE CONFIG (updated to new API key) ==========
     const firebaseConfig = {
-      apiKey: "AIzaSyA6-ATQLe_1n-GLzeXelqoO7Rm_WRXGR68",
+      apiKey: "AIzaSyBIums2N8B9AcAqwbstg1eVOOGsJZXrnPU",
       authDomain: "readaura.firebaseapp.com",
       databaseURL: "https://readaura-default-rtdb.firebaseio.com",
       projectId: "readaura",
@@ -131,33 +150,55 @@
     const db = firebase.database();
     const auth = firebase.auth();
 
-    // Utility: get query param
+    // Global variables
+    let currentUser = null;
+    let allChapters = [];        // full array of {key, title, number}
+    let displayedCount = 28;     // initial number to show
+    let currentBookId = null;
+
+    // Helper: get query param
     function getQueryParam(param) {
       return new URLSearchParams(window.location.search).get(param);
     }
 
+    // Navigation
     function goHome() { window.location.href = "index.html"; }
     function goToAuthorPage() { window.location.href = "become-an-author.html"; }
 
-    // Read now -> goes to first chapter (if exists) or chapter 1 fallback
-    function readNow() {
-      const bookId = getQueryParam("id");
-      if (!bookId) return;
-      // Try to get first chapter key
-      db.ref(`chapters/${bookId}`).orderByKey().limitToFirst(1).once("value").then(snap => {
-        if (!snap.exists()) {
-          // fallback to chapter=1
-          window.location.href = `chapter.html?bookId=${bookId}&chapter=1`;
-          return;
-        }
-        const firstKey = Object.keys(snap.val())[0];
-        window.location.href = `chapter.html?bookId=${bookId}&chapter=${firstKey}`;
-      }).catch(() => {
-        window.location.href = `chapter.html?bookId=${bookId}&chapter=1`;
-      });
-    }
+    // ========== PROFILE & AUTH (same as index.html) ==========
+    function signOut() { auth.signOut(); }
 
-    // Load site logo (consistent with index which uses site/logo)
+    auth.onAuthStateChanged(async (user) => {
+      currentUser = user;
+      const profileDiv = document.getElementById('user-profile');
+      const authBtn = document.getElementById('auth-btn');
+
+      if (user) {
+        const snapshot = await db.ref('users/' + user.uid).once('value');
+        const profile = snapshot.val();
+        if (profile && profile.firstName) {
+          profileDiv.classList.remove('hidden');
+          authBtn.classList.add('hidden');
+          document.getElementById('user-firstname').innerText = profile.firstName;
+          const shadowDiv = document.getElementById('avatar-shadow');
+          if (profile.gender === 'male') {
+            shadowDiv.innerHTML = '<i class="fas fa-user-astronaut fa-lg text-purple-700"></i>';
+          } else if (profile.gender === 'female') {
+            shadowDiv.innerHTML = '<i class="fas fa-user-circle fa-lg text-pink-500"></i>';
+          } else {
+            shadowDiv.innerHTML = '<i class="fas fa-user fa-lg text-gray-500"></i>';
+          }
+        } else {
+          // No profile – redirect to complete profile page
+          window.location.href = 'complete-profile.html';
+        }
+      } else {
+        profileDiv.classList.add('hidden');
+        authBtn.classList.remove('hidden');
+      }
+    });
+
+    // Load site logo
     function loadLogo() {
       db.ref("site/logo").on("value", snap => {
         const url = snap.val();
@@ -165,137 +206,138 @@
       });
     }
 
-    // Populate book details, tags and chapters
-    function loadBook() {
-      const bookId = getQueryParam("id");
-      if (!bookId) return;
-
-      const bookRef = db.ref("books/" + bookId);
-      bookRef.on("value", snap => {
-        const book = snap.val();
-        if (!book) {
-          // book removed or not found
-          document.getElementById("book-title").innerText = "Book not found";
-          document.getElementById("book-summary").innerText = "";
-          document.getElementById("chapter-list").innerHTML = "<p class='text-gray-500 text-sm'>No chapters found.</p>";
-          return;
-        }
-
-        // Basic fields
-        document.getElementById("book-title").innerText = book.title || "Untitled";
-        document.getElementById("book-author").innerText = "Author: " + (book.author || "Unknown");
-        document.getElementById("book-genre").innerText = "Genre: " + (book.genre || "N/A");
-        document.getElementById("book-status").innerText = "Status: " + (book.status || "Ongoing");
-        document.getElementById("book-updated").innerText = "Last updated: " + (book.lastUpdated || "Recently");
-        document.getElementById("book-summary").innerText = book.description || "No description available.";
-        document.getElementById("book-cover").src = book.cover || "https://via.placeholder.com/200x300";
-
-        // Tags - support array or object
-        const tagsContainer = document.getElementById("tags-container");
-        tagsContainer.innerHTML = "";
-        if (book.tags) {
-          if (Array.isArray(book.tags)) {
-            book.tags.forEach(tag => addTag(tag));
-          } else if (typeof book.tags === "object") {
-            // if tags stored as map
-            Object.values(book.tags).forEach(tag => addTag(tag));
-          }
-        }
-
-        // increment views (safe: use transaction to avoid race)
-        try {
-          bookRef.child('views').transaction(curr => (curr || 0) + 1);
-        } catch (e) {
-          console.warn("Could not increment views:", e);
-        }
-
-        // load chapters
-        loadChapters(bookId);
-      });
-    }
-
-    // small helper to append a tag pill
-    function addTag(tagText) {
-      if (!tagText) return;
-      const span = document.createElement("span");
-      span.className = "px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded-full";
-      span.innerText = tagText;
-      document.getElementById("tags-container").appendChild(span);
-    }
-
-    // Load chapters robustly and sort numeric keys if appropriate
-    function loadChapters(bookId) {
-      const chapterList = document.getElementById("chapter-list");
-      chapterList.innerHTML = "<p class='text-gray-500 text-sm'>Loading chapters...</p>";
-
-      db.ref(`chapters/${bookId}`).once("value").then(snap => {
-        if (!snap.exists()) {
-          chapterList.innerHTML = "<p class='text-gray-500 text-sm'>No chapters found.</p>";
-          return;
-        }
-
-        // collect as array
-        let chapters = [];
-        snap.forEach(ch => {
-          const key = ch.key;
-          const val = ch.val();
-          // try parse numeric key:
-          const maybeNum = Number(key);
-          chapters.push({
-            key,
-            title: val.title || `Chapter ${key}`,
-            sortKey: Number.isFinite(maybeNum) ? maybeNum : key
-          });
-        });
-
-        // if keys are numeric we want ascending numeric order, else sort by sortKey (string)
-        chapters.sort((a, b) => {
-          if (typeof a.sortKey === 'number' && typeof b.sortKey === 'number') return a.sortKey - b.sortKey;
-          // fallback: string compare
-          return String(a.sortKey).localeCompare(String(b.sortKey), undefined, { numeric: true });
-        });
-
-        // render
-        chapterList.innerHTML = "";
-        chapters.forEach(ch => {
-          const div = document.createElement("div");
-          div.className = "chapter-card border p-3 rounded cursor-pointer";
-          div.innerText = ch.title;
-          div.onclick = () => window.location.href = `chapter.html?bookId=${bookId}&chapter=${ch.key}`;
-          chapterList.appendChild(div);
-        });
-
-      }).catch(err => {
-        console.error("Error loading chapters:", err);
-        chapterList.innerHTML = "<p class='text-gray-500 text-sm'>Error loading chapters.</p>";
-      });
-    }
-
-    // Simple local chapter search (filters chapter list by text)
-    function searchChapters() {
-      const q = document.getElementById("search-input").value.trim().toLowerCase();
-      const list = document.querySelectorAll("#chapter-list .chapter-card");
-      list.forEach(item => {
-        const txt = item.innerText.toLowerCase();
-        item.style.display = q === "" || txt.includes(q) ? "" : "none";
-      });
-    }
-
-    // Auth functions
-    function toggleAuth() {
-      if (auth.currentUser) {
-        auth.signOut().catch(err => console.error("Sign out error", err));
+    // Read Now: go to first chapter (if exists)
+    function readNow() {
+      if (!currentBookId) return;
+      if (allChapters.length > 0) {
+        window.location.href = `chapter.html?bookId=${currentBookId}&chapter=${allChapters[0].key}`;
       } else {
-        const provider = new firebase.auth.GoogleAuthProvider();
-        auth.signInWithPopup(provider).catch(err => console.error("Sign-in error", err));
+        window.location.href = `chapter.html?bookId=${currentBookId}&chapter=1`;
       }
     }
 
-    auth.onAuthStateChanged(user => {
-      document.getElementById("auth-btn").innerText = user ? "Sign Out" : "Sign In";
-    });
+    // Render chapters (shows first 'displayedCount')
+    function renderChapters() {
+      const container = document.getElementById('chapter-list');
+      const loadMoreContainer = document.getElementById('load-more-container');
+      const toShow = allChapters.slice(0, displayedCount);
+      container.innerHTML = '';
+      toShow.forEach(ch => {
+        const div = document.createElement('div');
+        div.className = 'chapter-card border p-3 rounded cursor-pointer hover:bg-gray-50';
+        div.innerText = ch.title;
+        div.onclick = () => {
+          window.location.href = `chapter.html?bookId=${currentBookId}&chapter=${ch.key}`;
+        };
+        container.appendChild(div);
+      });
+      // Show load more button only if there are more chapters
+      if (allChapters.length > displayedCount) {
+        loadMoreContainer.classList.remove('hidden');
+      } else {
+        loadMoreContainer.classList.add('hidden');
+      }
+    }
 
-    // Initialize UI
+    // Load more chapters (adds next 20)
+    function loadMoreChapters() {
+      displayedCount += 20;
+      renderChapters();
+    }
+
+    // Load book details and chapters
+    async function loadBook() {
+      const bookId = getQueryParam("id");
+      if (!bookId) {
+        document.getElementById("book-title").innerText = "Invalid book";
+        return;
+      }
+      currentBookId = bookId;
+
+      // Book data
+      const bookSnap = await db.ref(`books/${bookId}`).once('value');
+      const book = bookSnap.val();
+      if (!book) {
+        document.getElementById("book-title").innerText = "Book not found";
+        document.getElementById("book-summary").innerText = "";
+        document.getElementById("chapter-list").innerHTML = "<p class='text-gray-500 text-sm'>No chapters found.</p>";
+        return;
+      }
+
+      // Fill book info
+      document.getElementById("book-title").innerText = book.title || "Untitled";
+      document.getElementById("book-author").innerText = "Author: " + (book.author || "Unknown");
+      document.getElementById("book-genre").innerText = "Genre: " + (book.genre || "N/A");
+      document.getElementById("book-status").innerText = "Status: " + (book.status || "Ongoing");
+      document.getElementById("book-updated").innerText = "Last updated: " + (book.lastUpdated || "Recently");
+      document.getElementById("book-summary").innerText = book.description || "No description available.";
+      document.getElementById("book-cover").src = book.cover || "https://via.placeholder.com/200x300";
+
+      // Tags
+      const tagsContainer = document.getElementById("tags-container");
+      tagsContainer.innerHTML = "";
+      if (book.tags) {
+        const tagArray = Array.isArray(book.tags) ? book.tags : Object.values(book.tags);
+        tagArray.forEach(tag => {
+          if (tag) {
+            const span = document.createElement("span");
+            span.className = "px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded-full";
+            span.innerText = tag;
+            tagsContainer.appendChild(span);
+          }
+        });
+      }
+
+      // Increment total views (safe)
+      try {
+        await db.ref(`books/${bookId}/views`).transaction(curr => (curr || 0) + 1);
+      } catch(e) { console.warn("View increment failed", e); }
+
+      // Load chapters
+      const chaptersSnap = await db.ref(`chapters/${bookId}`).once('value');
+      if (!chaptersSnap.exists()) {
+        document.getElementById("chapter-list").innerHTML = "<p class='text-gray-500 text-sm'>No chapters found.</p>";
+        return;
+      }
+
+      // Build chapters array
+      let chapters = [];
+      chaptersSnap.forEach(child => {
+        const key = child.key;
+        const val = child.val();
+        let title = val.title || `Chapter ${key}`;
+        // Try to extract numeric order from key
+        let number = isNaN(parseInt(key)) ? Infinity : parseInt(key);
+        chapters.push({ key, title, number });
+      });
+      // Sort by numeric number (or by key if number not available)
+      chapters.sort((a,b) => {
+        if (a.number !== b.number) return a.number - b.number;
+        return String(a.key).localeCompare(String(b.key), undefined, { numeric: true });
+      });
+
+      allChapters = chapters;
+      displayedCount = 28;
+      renderChapters();
+
+      // Attach load more button
+      const loadMoreBtn = document.getElementById('load-more-btn');
+      if (loadMoreBtn) {
+        loadMoreBtn.onclick = loadMoreChapters;
+      }
+    }
+
+    // Search chapters (filter displayed list)
+    function searchChapters() {
+      const query = document.getElementById("search-input").value.trim().toLowerCase();
+      const chapterDivs = document.querySelectorAll("#chapter-list .chapter-card");
+      chapterDivs.forEach(div => {
+        const text = div.innerText.toLowerCase();
+        div.style.display = text.includes(query) ? "" : "none";
+      });
+    }
+
+    // Initialise
     loadLogo();
     loadBook();
   </script>
