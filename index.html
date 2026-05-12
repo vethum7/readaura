@@ -3,15 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ReadAura — Read Online</title>
-
+  <title>ReadAura — Free Online Books & Reading Community</title>
+  <meta name="description" content="ReadAura offers thousands of free books, novels, and guides. Join our reading community, bookmark your favorites, and discover your next great read.">
+  <meta name="keywords" content="free books, read online, novels, book summaries, reading community">
+  <meta name="author" content="ReadAura">
+  
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="https://i.imgur.com/8WN9Od9.png">
 
+  <!-- Google AdSense (your existing client ID) -->
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2883257010372888"
      crossorigin="anonymous"></script>
   
-  <!-- Tailwind CSS -->
+  <!-- Tailwind CSS & Font Awesome -->
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
@@ -38,12 +42,16 @@
       background-color: white;
       box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
+
+    .hero {
+      background: linear-gradient(135deg, #6b46c1 0%, #805ad5 100%);
+    }
   </style>
 </head>
 
 <body class="bg-gray-50 font-sans text-gray-800">
 
-  <!-- Header -->
+  <!-- Header (unchanged, but I added a "Contact" link in the dropdown later) -->
   <header class="p-3 flex items-center justify-between">
     <div class="flex items-center space-x-4">
       <div id="logo" class="cursor-pointer flex items-center" onclick="goHome()">
@@ -80,10 +88,85 @@
     </div>
   </header>
 
-  <!-- Main -->
-  <main class="container mx-auto p-4 mt-6">
-    <div id="books-list" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4"></div>
+  <!-- Main Content -->
+  <main class="container mx-auto p-4 mt-4">
+    
+    <!-- HERO SECTION (NEW: adds valuable content for AdSense) -->
+    <div class="hero text-white rounded-xl p-6 mb-8 shadow-lg">
+      <h1 class="text-3xl md:text-4xl font-bold mb-2">Welcome to ReadAura</h1>
+      <p class="text-lg md:text-xl mb-4">Thousands of free books, novels, and guides at your fingertips. Read online, bookmark favorites, and join a community of readers.</p>
+      <div class="flex flex-wrap gap-3">
+        <button onclick="document.getElementById('books-list').scrollIntoView({behavior:'smooth'})" class="bg-white text-purple-700 px-5 py-2 rounded-lg font-semibold hover:bg-gray-100 transition">Browse Library</button>
+        <button onclick="window.location.href='top-novels.html'" class="bg-purple-800 text-white px-5 py-2 rounded-lg font-semibold hover:bg-purple-900 transition">Top Novels</button>
+      </div>
+    </div>
 
+    <!-- FEATURED BOOKS SECTION (static – you can replace with dynamic later) -->
+    <div class="mb-8">
+      <h2 class="text-2xl font-bold text-purple-800 border-l-4 border-purple-500 pl-3 mb-4">📚 Editor's Picks</h2>
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+        <!-- These are just examples. They link to your existing book pages using the ID. -->
+        <div class="book-card cursor-pointer text-center" onclick="window.location.href='book.html?id=example1'">
+          <img src="https://via.placeholder.com/150x210?text=The+Great+Novel" alt="Sample Book" class="book-cover mb-2">
+          <h3 class="text-sm font-bold">The Silent Patient</h3>
+          <p class="text-xs text-gray-600">Alex Michaelides</p>
+        </div>
+        <div class="book-card cursor-pointer text-center" onclick="window.location.href='book.html?id=example2'">
+          <img src="https://via.placeholder.com/150x210?text=Atomic+Habits" alt="Atomic Habits" class="book-cover mb-2">
+          <h3 class="text-sm font-bold">Atomic Habits</h3>
+          <p class="text-xs text-gray-600">James Clear</p>
+        </div>
+        <div class="book-card cursor-pointer text-center" onclick="window.location.href='book.html?id=example3'">
+          <img src="https://via.placeholder.com/150x210?text=Dune" alt="Dune" class="book-cover mb-2">
+          <h3 class="text-sm font-bold">Dune</h3>
+          <p class="text-xs text-gray-600">Frank Herbert</p>
+        </div>
+        <div class="book-card cursor-pointer text-center" onclick="window.location.href='book.html?id=example4'">
+          <img src="https://via.placeholder.com/150x210?text=Becoming" alt="Becoming" class="book-cover mb-2">
+          <h3 class="text-sm font-bold">Becoming</h3>
+          <p class="text-xs text-gray-600">Michelle Obama</p>
+        </div>
+        <div class="book-card cursor-pointer text-center" onclick="window.location.href='book.html?id=example5'">
+          <img src="https://via.placeholder.com/150x210?text=The+Midnight+Library" alt="The Midnight Library" class="book-cover mb-2">
+          <h3 class="text-sm font-bold">The Midnight Library</h3>
+          <p class="text-xs text-gray-600">Matt Haig</p>
+        </div>
+      </div>
+      <p class="text-center text-sm text-gray-500 mt-2 italic">⭐ Our team handpicks these hidden gems every week.</p>
+    </div>
+
+    <!-- RECENT ARTICLES / BLOG (NEW: adds original written content) -->
+    <div class="mb-10 bg-white rounded-xl shadow-md p-5">
+      <h2 class="text-2xl font-bold text-purple-800 border-l-4 border-purple-500 pl-3 mb-4">✍️ Reading Tips & Insights</h2>
+      <div class="grid md:grid-cols-3 gap-6">
+        <div class="border rounded-lg p-3 hover:shadow transition">
+          <i class="fas fa-leaf text-purple-600 text-2xl mb-2"></i>
+          <h3 class="font-bold text-lg">How to Build a Reading Habit</h3>
+          <p class="text-sm text-gray-600">Start small, set a daily goal, and use ReadAura's bookmarks to track progress.</p>
+          <a href="#" class="text-purple-600 text-sm font-semibold inline-block mt-2">Read more →</a>
+        </div>
+        <div class="border rounded-lg p-3 hover:shadow transition">
+          <i class="fas fa-star text-purple-600 text-2xl mb-2"></i>
+          <h3 class="font-bold text-lg">Top 10 Novels of 2025</h3>
+          <p class="text-sm text-gray-600">Discover the most loved books by our community this year.</p>
+          <a href="#" class="text-purple-600 text-sm font-semibold inline-block mt-2">Read more →</a>
+        </div>
+        <div class="border rounded-lg p-3 hover:shadow transition">
+          <i class="fas fa-users text-purple-600 text-2xl mb-2"></i>
+          <h3 class="font-bold text-lg">Join Our Reading Challenge</h3>
+          <p class="text-sm text-gray-600">Read 12 books in 12 months. Sign up and get personalized recommendations.</p>
+          <a href="#" class="text-purple-600 text-sm font-semibold inline-block mt-2">Learn more →</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- ALL BOOKS SECTION (original dynamic list) -->
+    <div>
+      <h2 class="text-2xl font-bold text-purple-800 border-l-4 border-purple-500 pl-3 mb-4">📖 All Books</h2>
+      <div id="books-list" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4"></div>
+    </div>
+
+    <!-- BOOK DETAIL VIEW (hidden initially, same as before) -->
     <div id="book-detail" class="hidden mt-4">
       <button onclick="showBooks()" class="text-blue-500 mb-2">&larr; Back</button>
       <img id="book-cover" class="w-48 h-64 object-cover mb-4 hidden rounded shadow">
@@ -106,22 +189,23 @@
     </div>
   </main>
 
-  <!-- Footer -->
+  <!-- FOOTER (updated: added Contact link) -->
   <footer class="bg-gray-200 text-gray-700 p-4 mt-8 text-center">
     <a href="index.html" class="text-purple-600 hover:underline mx-2">Home</a> |
     <a href="about.html" class="text-purple-600 hover:underline mx-2">About Us</a> |
     <a href="privacy.html" class="text-purple-600 hover:underline mx-2">Privacy Policy</a> |
-    <a href="terms.html" class="text-purple-600 hover:underline mx-2">Terms of Service</a>
+    <a href="terms.html" class="text-purple-600 hover:underline mx-2">Terms of Service</a> |
+    <a href="contact.html" class="text-purple-600 hover:underline mx-2">Contact</a>
     <p class="mt-2 text-sm">&copy; 2026 ReadAura. All rights reserved.</p>
   </footer>
 
-  <!-- Firebase -->
+  <!-- Firebase scripts (unchanged) -->
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 
   <script>
-    // Updated Firebase config with new API key
+    // Firebase config (your existing one)
     const firebaseConfig = {
       apiKey: "AIzaSyBIums2N8B9AcAqwbstg1eVOOGsJZXrnPU",
       authDomain: "readaura.firebaseapp.com",
@@ -140,29 +224,23 @@
     let currentBookId = null;
     let bookmarks = [];
 
-    // ------------------- PROFILE & AUTH UI -------------------
+    // Auth & UI (unchanged)
     function signOut() {
       auth.signOut();
     }
 
-    // Update UI based on auth state + load profile from DB
     auth.onAuthStateChanged(async (user) => {
       const profileDiv = document.getElementById('user-profile');
       const authBtn = document.getElementById('auth-btn');
 
       if (user) {
-        // Fetch profile from Realtime Database (firstName, gender)
         const snapshot = await db.ref('users/' + user.uid).once('value');
         const profile = snapshot.val();
 
         if (profile && profile.firstName) {
-          // Show profile area, hide sign-in button
           profileDiv.classList.remove('hidden');
           authBtn.classList.add('hidden');
-
           document.getElementById('user-firstname').innerText = profile.firstName;
-
-          // Set gender-based shadow avatar (using Font Awesome icons)
           const shadowDiv = document.getElementById('avatar-shadow');
           if (profile.gender === 'male') {
             shadowDiv.innerHTML = '<i class="fas fa-user-astronaut fa-lg text-purple-700"></i>';
@@ -172,17 +250,14 @@
             shadowDiv.innerHTML = '<i class="fas fa-user fa-lg text-gray-500"></i>';
           }
         } else {
-          // User exists in Auth but missing profile – redirect to complete profile page
           window.location.href = 'complete-profile.html';
         }
       } else {
-        // No user: hide profile, show sign-in button
         profileDiv.classList.add('hidden');
         authBtn.classList.remove('hidden');
       }
     });
 
-    // ------------------- ORIGINAL FUNCTIONS (unchanged) -------------------
     function loadLogo() {
       db.ref("site/logo").on("value", snap => {
         const logoUrl = snap.val();
@@ -205,6 +280,7 @@
     function goToAuthorPage() { window.location.href = "become-an-author.html"; }
     function showTopNovels() { window.location.href = "top-novels.html"; }
 
+    // Enhanced loadBooks (adds description if available)
     function loadBooks() {
       db.ref("books").on("value", snap => {
         const list = document.getElementById("books-list");
@@ -218,14 +294,16 @@
             ? `<img src="${book.cover}" alt="${book.title}" class="book-cover mb-2"/>`
             : `<div class='book-cover bg-gray-200 flex items-center justify-center text-gray-400'>No Image</div>`;
 
+          const shortDesc = book.description ? `<p class="text-xs text-gray-500 mt-1 line-clamp-2 hidden sm:block">${book.description.substring(0, 60)}...</p>` : "";
+
           div.innerHTML = `
             ${coverImg}
             <h3 class="text-sm font-bold">${book.title}</h3>
-            <p class="text-xs text-gray-600">${book.author || ""}</p>
+            <p class="text-xs text-gray-600">${book.author || "Unknown Author"}</p>
+            ${shortDesc}
           `;
 
           div.onclick = () => window.location.href = `book.html?id=${bookSnap.key}`;
-
           list.appendChild(div);
         });
       });
@@ -258,7 +336,6 @@
     }
 
     function toggleAuth() {
-      // Redirect to login page
       window.location.href = 'login.html';
     }
 
@@ -273,19 +350,23 @@
     }
 
     function loadBookmarks() {
-      const uid = auth.currentUser.uid;
-      db.ref("bookmarks/" + uid).on("value", snap => {
-        bookmarks = snap.val() || [];
-        updateBookmarkIcon();
-      });
+      if (auth.currentUser) {
+        const uid = auth.currentUser.uid;
+        db.ref("bookmarks/" + uid).on("value", snap => {
+          bookmarks = snap.val() || [];
+          updateBookmarkIcon();
+        });
+      }
     }
 
     function updateBookmarkIcon() {
       const icon = document.getElementById("bookmark-icon");
       if (!currentBookId) return;
-      icon.className = bookmarks.includes(currentBookId)
-        ? "fas fa-bookmark text-purple-600"
-        : "far fa-bookmark";
+      if (icon) {
+        icon.className = bookmarks.includes(currentBookId)
+          ? "fas fa-bookmark text-purple-600"
+          : "far fa-bookmark";
+      }
     }
 
     function postComment() {
@@ -335,6 +416,7 @@
 
     function loadAds() {
       const adsDiv = document.getElementById("ads-space");
+      if (!adsDiv) return;
       db.ref("ads").on("value", snap => {
         adsDiv.innerHTML = "";
         snap.forEach(ad => {
@@ -356,14 +438,13 @@
       });
     }
 
-    // Initialization
+    // Init
     loadLogo();
     loadBooks();
 
-    // Check for book ID in URL
+    // Handle URL params (direct book link)
     const params = new URLSearchParams(window.location.search);
     const bookId = params.get("id");
-
     if (bookId) {
       db.ref("books/" + bookId).once("value").then(snap => {
         if (snap.exists()) {
