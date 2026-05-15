@@ -3,7 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Book — ReadAura</title>
+  <title>ReadAura — Read Books Online: Chapters & Details</title>
+  <meta name="description" content="Read full books online on ReadAura. Browse chapters, bookmark your favorites, and track reading progress. Join our community today." />
+  <meta name="keywords" content="read books online, book chapters, free novels, reading community" />
+  <meta name="author" content="ReadAura" />
 
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="https://i.imgur.com/8WN9Od9.png">
@@ -36,25 +39,29 @@
     #load-more-btn:hover {
       background-color: #7c3aed;
     }
+    #back-to-top {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      display: none;
+      z-index: 99;
+    }
   </style>
 </head>
 <body class="bg-gray-50 font-sans text-gray-800">
 
-  <!-- ========== HEADER (identical to index.html) ========== -->
-  <header class="p-3 flex items-center justify-between">
+  <!-- ========== HEADER (consistent with index) ========== -->
+  <header class="p-3 flex items-center justify-between flex-wrap">
     <div class="flex items-center space-x-4">
       <div id="logo" class="cursor-pointer flex items-center" onclick="goHome()">
         <img id="site-logo" src="https://i.imgur.com/8WN9Od9.png" alt="ReadAura Logo" class="h-10 w-auto rounded">
       </div>
-      <button onclick="goHome()" class="text-purple-600 font-semibold hover:underline whitespace-nowrap">
-        Home
-      </button>
-      <button onclick="goToAuthorPage()" class="text-purple-600 font-semibold hover:underline whitespace-nowrap">
-        Become an Author
-      </button>
+      <button onclick="goHome()" class="text-purple-600 font-semibold hover:underline">Home</button>
+      <button onclick="window.location.href='top-novels.html'" class="text-purple-600 font-semibold hover:underline">Top Novels</button>
+      <button onclick="goToAuthorPage()" class="text-purple-600 font-semibold hover:underline">Become an Author</button>
     </div>
 
-    <div class="flex items-center space-x-2">
+    <div class="flex items-center space-x-2 mt-2 sm:mt-0">
       <div class="flex items-center bg-gray-100 px-3 py-1 rounded w-48 sm:w-64">
         <i class="fas fa-search text-gray-500 mr-2"></i>
         <input id="search-input" type="text" placeholder="Search chapters..." 
@@ -68,20 +75,31 @@
         <button onclick="signOut()" class="text-xs text-red-500 ml-1 hover:underline">Logout</button>
       </div>
 
-      <!-- Sign In button (shown when logged out) -->
+      <!-- Sign In button -->
       <button id="auth-btn" class="bg-purple-600 text-white px-3 py-1 rounded" onclick="window.location.href='login.html'">
         Sign In
       </button>
     </div>
   </header>
 
-  <!-- ========== BOOK DETAIL SECTION ========== -->
+  <!-- ========== MAIN CONTENT ========== -->
   <main class="container mx-auto p-6">
-    <div id="book-detail" class="bg-white rounded-lg shadow-lg p-6">
+    <!-- Loading indicator -->
+    <div id="loading-indicator" class="text-center py-10">
+      <i class="fas fa-spinner fa-pulse text-purple-600 text-3xl"></i>
+      <p class="mt-2 text-gray-600">Loading book details...</p>
+    </div>
+
+    <div id="book-detail" class="bg-white rounded-lg shadow-lg p-6 hidden">
       <div class="flex flex-col md:flex-row">
         <img id="book-cover" src="https://via.placeholder.com/200x300" alt="Book Cover" class="book-cover w-40 h-56 md:w-52 md:h-72 object-cover rounded-lg mx-auto md:mx-0" />
         <div class="md:ml-6 mt-4 md:mt-0 flex-1">
-          <h1 id="book-title" class="text-2xl font-bold text-gray-900 mb-2">Book Title</h1>
+          <div class="flex justify-between items-start">
+            <h1 id="book-title" class="text-2xl font-bold text-gray-900 mb-2">Book Title</h1>
+            <button id="bookmark-btn" class="text-gray-500 hover:text-purple-600 text-xl" onclick="toggleBookmark()">
+              <i id="bookmark-icon" class="far fa-bookmark"></i>
+            </button>
+          </div>
           <p id="book-author" class="text-gray-600 mb-1">Author: Unknown</p>
           <p id="book-genre" class="text-gray-600 mb-1">Genre: N/A</p>
           <p id="book-status" class="text-gray-600 mb-1">Status: Ongoing</p>
@@ -93,21 +111,22 @@
             <div id="tags-container" class="flex flex-wrap gap-2"></div>
           </div>
 
-          <div class="flex space-x-3 mt-3">
+          <div class="flex space-x-3 mt-3 flex-wrap gap-2">
             <button id="read-now-btn" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded shadow-md" onclick="readNow()">📖 Read Now</button>
+            <button onclick="shareBook()" class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded shadow-md">🔗 Share</button>
           </div>
         </div>
       </div>
 
       <!-- Description -->
       <section class="mt-8">
-        <h2 class="text-xl font-semibold border-b pb-2 mb-3">Book Description</h2>
+        <h2 class="text-xl font-semibold border-b pb-2 mb-3">📖 Book Description</h2>
         <p id="book-summary" class="text-gray-700 leading-relaxed">Loading description...</p>
       </section>
 
-      <!-- Chapters (preload first 28, then load more) -->
+      <!-- Chapters -->
       <section class="mt-8">
-        <h2 class="text-xl font-semibold border-b pb-2 mb-3">Chapters</h2>
+        <h2 class="text-xl font-semibold border-b pb-2 mb-3">📑 Chapters</h2>
         <div id="chapter-list" class="space-y-2 max-h-96 overflow-y-auto">
           <p class="text-gray-500 text-sm">Loading chapters...</p>
         </div>
@@ -120,12 +139,18 @@
     </div>
   </main>
 
-  <!-- ========== FOOTER (identical to index.html) ========== -->
+  <!-- Back to Top Button -->
+  <button id="back-to-top" class="bg-purple-600 text-white p-3 rounded-full shadow-lg hover:bg-purple-700 transition">
+    <i class="fas fa-arrow-up"></i>
+  </button>
+
+  <!-- ========== FOOTER (with Contact link) ========== -->
   <footer class="bg-gray-200 text-gray-700 p-4 mt-8 text-center">
     <a href="index.html" class="text-purple-600 hover:underline mx-2">Home</a> |
     <a href="about.html" class="text-purple-600 hover:underline mx-2">About Us</a> |
     <a href="privacy.html" class="text-purple-600 hover:underline mx-2">Privacy Policy</a> |
-    <a href="terms.html" class="text-purple-600 hover:underline mx-2">Terms of Service</a>
+    <a href="terms.html" class="text-purple-600 hover:underline mx-2">Terms of Service</a> |
+    <a href="contact.html" class="text-purple-600 hover:underline mx-2">Contact</a>
     <p class="mt-2 text-sm">&copy; 2026 ReadAura. All rights reserved.</p>
   </footer>
 
@@ -135,7 +160,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 
   <script>
-    // ========== FIREBASE CONFIG (updated to new API key) ==========
+    // ========== FIREBASE CONFIG ==========
     const firebaseConfig = {
       apiKey: "AIzaSyBIums2N8B9AcAqwbstg1eVOOGsJZXrnPU",
       authDomain: "readaura.firebaseapp.com",
@@ -155,17 +180,17 @@
     let allChapters = [];        // full array of {key, title, number}
     let displayedCount = 28;     // initial number to show
     let currentBookId = null;
+    let bookmarks = [];           // array of bookmarked book IDs
 
-    // Helper: get query param
+    // Helper functions
     function getQueryParam(param) {
       return new URLSearchParams(window.location.search).get(param);
     }
 
-    // Navigation
     function goHome() { window.location.href = "index.html"; }
     function goToAuthorPage() { window.location.href = "become-an-author.html"; }
 
-    // ========== PROFILE & AUTH (same as index.html) ==========
+    // ========== AUTH & PROFILE ==========
     function signOut() { auth.signOut(); }
 
     auth.onAuthStateChanged(async (user) => {
@@ -181,24 +206,59 @@
           authBtn.classList.add('hidden');
           document.getElementById('user-firstname').innerText = profile.firstName;
           const shadowDiv = document.getElementById('avatar-shadow');
-          if (profile.gender === 'male') {
-            shadowDiv.innerHTML = '<i class="fas fa-user-astronaut fa-lg text-purple-700"></i>';
-          } else if (profile.gender === 'female') {
-            shadowDiv.innerHTML = '<i class="fas fa-user-circle fa-lg text-pink-500"></i>';
-          } else {
-            shadowDiv.innerHTML = '<i class="fas fa-user fa-lg text-gray-500"></i>';
-          }
+          if (profile.gender === 'male') shadowDiv.innerHTML = '<i class="fas fa-user-astronaut fa-lg text-purple-700"></i>';
+          else if (profile.gender === 'female') shadowDiv.innerHTML = '<i class="fas fa-user-circle fa-lg text-pink-500"></i>';
+          else shadowDiv.innerHTML = '<i class="fas fa-user fa-lg text-gray-500"></i>';
         } else {
-          // No profile – redirect to complete profile page
           window.location.href = 'complete-profile.html';
         }
+        // Load bookmarks for this user
+        loadBookmarks();
       } else {
         profileDiv.classList.add('hidden');
         authBtn.classList.remove('hidden');
       }
+      // Update bookmark icon if book is loaded
+      updateBookmarkIcon();
     });
 
-    // Load site logo
+    // Load bookmarks from Firebase
+    function loadBookmarks() {
+      if (!currentUser) return;
+      db.ref('bookmarks/' + currentUser.uid).on('value', snap => {
+        bookmarks = snap.val() || [];
+        updateBookmarkIcon();
+      });
+    }
+
+    function toggleBookmark() {
+      if (!currentUser) {
+        alert('Please sign in to bookmark books.');
+        window.location.href = 'login.html';
+        return;
+      }
+      if (!currentBookId) return;
+      const uid = currentUser.uid;
+      let newBookmarks;
+      if (bookmarks.includes(currentBookId)) {
+        newBookmarks = bookmarks.filter(b => b !== currentBookId);
+      } else {
+        newBookmarks = [...bookmarks, currentBookId];
+      }
+      db.ref('bookmarks/' + uid).set(newBookmarks);
+    }
+
+    function updateBookmarkIcon() {
+      const icon = document.getElementById('bookmark-icon');
+      if (!icon) return;
+      if (currentBookId && bookmarks.includes(currentBookId)) {
+        icon.className = 'fas fa-bookmark text-purple-600';
+      } else {
+        icon.className = 'far fa-bookmark text-gray-500';
+      }
+    }
+
+    // ========== LOAD LOGO ==========
     function loadLogo() {
       db.ref("site/logo").on("value", snap => {
         const url = snap.val();
@@ -206,32 +266,51 @@
       });
     }
 
-    // Read Now: go to first chapter (if exists)
+    // ========== READ NOW ==========
     function readNow() {
       if (!currentBookId) return;
       if (allChapters.length > 0) {
         window.location.href = `chapter.html?bookId=${currentBookId}&chapter=${allChapters[0].key}`;
       } else {
-        window.location.href = `chapter.html?bookId=${currentBookId}&chapter=1`;
+        alert('No chapters available for this book yet.');
       }
     }
 
-    // Render chapters (shows first 'displayedCount')
+    // ========== SHARE BOOK ==========
+    function shareBook() {
+      const url = window.location.href;
+      if (navigator.share) {
+        navigator.share({
+          title: document.getElementById('book-title').innerText,
+          text: 'Check out this book on ReadAura!',
+          url: url
+        }).catch(() => {});
+      } else {
+        navigator.clipboard.writeText(url);
+        alert('Link copied to clipboard!');
+      }
+    }
+
+    // ========== RENDER CHAPTERS ==========
     function renderChapters() {
       const container = document.getElementById('chapter-list');
       const loadMoreContainer = document.getElementById('load-more-container');
       const toShow = allChapters.slice(0, displayedCount);
       container.innerHTML = '';
+      if (toShow.length === 0) {
+        container.innerHTML = '<p class="text-gray-500 text-sm">No chapters found.</p>';
+        loadMoreContainer.classList.add('hidden');
+        return;
+      }
       toShow.forEach(ch => {
         const div = document.createElement('div');
-        div.className = 'chapter-card border p-3 rounded cursor-pointer hover:bg-gray-50';
-        div.innerText = ch.title;
+        div.className = 'chapter-card border p-3 rounded cursor-pointer hover:bg-gray-50 flex justify-between items-center';
+        div.innerHTML = `<span>${ch.title}</span><i class="fas fa-chevron-right text-gray-400 text-sm"></i>`;
         div.onclick = () => {
           window.location.href = `chapter.html?bookId=${currentBookId}&chapter=${ch.key}`;
         };
         container.appendChild(div);
       });
-      // Show load more button only if there are more chapters
       if (allChapters.length > displayedCount) {
         loadMoreContainer.classList.remove('hidden');
       } else {
@@ -239,28 +318,28 @@
       }
     }
 
-    // Load more chapters (adds next 20)
     function loadMoreChapters() {
       displayedCount += 20;
       renderChapters();
     }
 
-    // Load book details and chapters
+    // ========== LOAD BOOK DETAILS ==========
     async function loadBook() {
       const bookId = getQueryParam("id");
       if (!bookId) {
-        document.getElementById("book-title").innerText = "Invalid book";
+        document.getElementById("loading-indicator").innerHTML = '<p class="text-red-500">Invalid book ID.</p>';
         return;
       }
       currentBookId = bookId;
 
-      // Book data
+      // Show loading, hide detail
+      document.getElementById("loading-indicator").classList.remove("hidden");
+      document.getElementById("book-detail").classList.add("hidden");
+
       const bookSnap = await db.ref(`books/${bookId}`).once('value');
       const book = bookSnap.val();
       if (!book) {
-        document.getElementById("book-title").innerText = "Book not found";
-        document.getElementById("book-summary").innerText = "";
-        document.getElementById("chapter-list").innerHTML = "<p class='text-gray-500 text-sm'>No chapters found.</p>";
+        document.getElementById("loading-indicator").innerHTML = '<p class="text-red-500">Book not found.</p>';
         return;
       }
 
@@ -288,46 +367,52 @@
         });
       }
 
-      // Increment total views (safe)
+      // Increment views and weeklyViews (atomic)
       try {
         await db.ref(`books/${bookId}/views`).transaction(curr => (curr || 0) + 1);
+        await db.ref(`books/${bookId}/weeklyViews`).transaction(curr => (curr || 0) + 1);
       } catch(e) { console.warn("View increment failed", e); }
 
       // Load chapters
       const chaptersSnap = await db.ref(`chapters/${bookId}`).once('value');
-      if (!chaptersSnap.exists()) {
-        document.getElementById("chapter-list").innerHTML = "<p class='text-gray-500 text-sm'>No chapters found.</p>";
-        return;
+      if (chaptersSnap.exists()) {
+        let chapters = [];
+        chaptersSnap.forEach(child => {
+          const key = child.key;
+          const val = child.val();
+          let title = val.title || `Chapter ${key}`;
+          // Try to parse numeric order
+          let num = isNaN(parseInt(key)) ? Infinity : parseInt(key);
+          // Also check if chapter has a 'number' field
+          if (val.number && !isNaN(val.number)) num = val.number;
+          chapters.push({ key, title, number: num });
+        });
+        // Sort by number (or key if numbers equal)
+        chapters.sort((a,b) => {
+          if (a.number !== b.number) return a.number - b.number;
+          return String(a.key).localeCompare(String(b.key), undefined, { numeric: true });
+        });
+        allChapters = chapters;
+        displayedCount = 28;
+        renderChapters();
+      } else {
+        allChapters = [];
+        renderChapters();
       }
-
-      // Build chapters array
-      let chapters = [];
-      chaptersSnap.forEach(child => {
-        const key = child.key;
-        const val = child.val();
-        let title = val.title || `Chapter ${key}`;
-        // Try to extract numeric order from key
-        let number = isNaN(parseInt(key)) ? Infinity : parseInt(key);
-        chapters.push({ key, title, number });
-      });
-      // Sort by numeric number (or by key if number not available)
-      chapters.sort((a,b) => {
-        if (a.number !== b.number) return a.number - b.number;
-        return String(a.key).localeCompare(String(b.key), undefined, { numeric: true });
-      });
-
-      allChapters = chapters;
-      displayedCount = 28;
-      renderChapters();
 
       // Attach load more button
       const loadMoreBtn = document.getElementById('load-more-btn');
-      if (loadMoreBtn) {
-        loadMoreBtn.onclick = loadMoreChapters;
-      }
+      if (loadMoreBtn) loadMoreBtn.onclick = loadMoreChapters;
+
+      // Hide loading, show book detail
+      document.getElementById("loading-indicator").classList.add("hidden");
+      document.getElementById("book-detail").classList.remove("hidden");
+
+      // Update bookmark icon after book loaded
+      updateBookmarkIcon();
     }
 
-    // Search chapters (filter displayed list)
+    // ========== SEARCH CHAPTERS (filter visible ones) ==========
     function searchChapters() {
       const query = document.getElementById("search-input").value.trim().toLowerCase();
       const chapterDivs = document.querySelectorAll("#chapter-list .chapter-card");
@@ -337,7 +422,20 @@
       });
     }
 
-    // Initialise
+    // ========== BACK TO TOP BUTTON ==========
+    const backToTop = document.getElementById('back-to-top');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 300) {
+        backToTop.style.display = 'flex';
+      } else {
+        backToTop.style.display = 'none';
+      }
+    });
+    backToTop.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    // ========== INITIALIZE ==========
     loadLogo();
     loadBook();
   </script>
