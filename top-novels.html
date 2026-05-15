@@ -1,9 +1,12 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Top Novels — ReadAura</title>
+  <title>ReadAura — Top Novels: All‑Time & Weekly Bestsellers</title>
+  <meta name="description" content="Discover the most popular novels on ReadAura. Ranked by all‑time views and weekly trending books. Join thousands of readers.">
+  <meta name="keywords" content="top novels, best books, trending books, weekly top, read online">
+  <meta name="author" content="ReadAura">
 
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="https://i.imgur.com/8WN9Od9.png">
@@ -12,17 +15,17 @@
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2883257010372888"
      crossorigin="anonymous"></script>
 
-  <!-- Tailwind CSS -->
+  <!-- Tailwind CSS + Font Awesome -->
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <style>
     .book-card {
-      transition: transform 0.2s ease;
+      transition: transform 0.2s ease, background-color 0.2s;
     }
     .book-card:hover {
-      transform: scale(1.03);
-      background-color: #fdf7ff;
+      transform: scale(1.01);
+      background-color: #faf5ff;
     }
     header {
       position: sticky;
@@ -31,50 +34,72 @@
       background-color: white;
       box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
+    .tab-active {
+      border-bottom: 3px solid #7c3aed;
+      color: #7c3aed;
+      font-weight: 600;
+    }
+    .tab-inactive {
+      color: #6b7280;
+      border-bottom: 3px solid transparent;
+    }
   </style>
 </head>
 <body class="bg-gray-50 font-sans text-gray-800">
 
-  <!-- Header -->
-  <header class="p-3 flex items-center justify-between">
+  <!-- Header (matches index.html with profile) -->
+  <header class="p-3 flex items-center justify-between flex-wrap">
     <div class="flex items-center space-x-4">
       <div id="logo" class="cursor-pointer flex items-center" onclick="goHome()">
         <img id="site-logo" src="https://i.imgur.com/8WN9Od9.png" alt="ReadAura Logo" class="h-10 w-auto rounded">
       </div>
-      <button onclick="goHome()" class="text-purple-600 font-semibold hover:underline whitespace-nowrap">
-        Home
-      </button>
-      <button onclick="goToAuthorPage()" class="text-purple-600 font-semibold hover:underline whitespace-nowrap">
-        Become an Author
-      </button>
+      <button onclick="goHome()" class="text-purple-600 font-semibold hover:underline whitespace-nowrap">Home</button>
+      <button onclick="goToAuthorPage()" class="text-purple-600 font-semibold hover:underline whitespace-nowrap">Become an Author</button>
     </div>
-    <div class="flex items-center space-x-2">
+    <div class="flex items-center space-x-2 mt-2 sm:mt-0">
       <div class="flex items-center bg-gray-100 px-3 py-1 rounded w-48 sm:w-64">
         <i class="fas fa-search text-gray-500 mr-2"></i>
         <input id="search-input" type="text" placeholder="Search novels..." 
-          class="bg-transparent outline-none w-full text-sm" oninput="searchNovels()">
+          class="bg-transparent outline-none w-full text-sm" oninput="filterNovels()">
       </div>
-      <button id="auth-btn" class="bg-purple-600 text-white px-3 py-1 rounded" onclick="toggleAuth()">
-        Sign In
-      </button>
+      <!-- Profile area (shown when logged in) -->
+      <div id="user-profile" class="hidden flex items-center space-x-2 bg-gray-100 px-3 py-1 rounded">
+        <div id="avatar-shadow" class="text-xl"></div>
+        <span id="user-firstname" class="text-sm font-semibold"></span>
+        <button onclick="signOut()" class="text-xs text-red-500 ml-1 hover:underline">Logout</button>
+      </div>
+      <!-- Sign In button (shown when logged out) -->
+      <button id="auth-btn" class="bg-purple-600 text-white px-3 py-1 rounded" onclick="toggleAuth()">Sign In</button>
     </div>
   </header>
 
-  <!-- Main -->
-  <main class="container mx-auto p-6 mt-6">
-    <h1 class="text-2xl font-bold mb-4 text-center">🏆 All‑Time Top Novels</h1>
-    <p class="text-gray-500 text-center mb-8">Ranked by total views (all time).</p>
+  <main class="container mx-auto p-6 mt-4">
+    <h1 class="text-3xl font-bold text-purple-800 text-center mb-2">🏆 Top Novels</h1>
+    <p class="text-gray-500 text-center mb-6">Discover what readers love most – ranked by all‑time views and weekly trending.</p>
 
-    <!-- Top Novels List -->
-    <div id="top-novels-list" class="space-y-4">
+    <!-- Tabs -->
+    <div class="flex justify-center space-x-8 border-b mb-8">
+      <button id="tab-alltime" class="py-2 px-4 text-lg tab-active transition" onclick="showAllTime()">📊 All‑Time Top</button>
+      <button id="tab-weekly" class="py-2 px-4 text-lg tab-inactive transition" onclick="showWeekly()">🔥 Weekly Trending</button>
+    </div>
+
+    <!-- Novel list container (will be filled by JS) -->
+    <div id="novels-list" class="space-y-4">
       <p class="text-center text-gray-500">Loading top novels...</p>
     </div>
   </main>
 
-  <!-- Footer -->
-  <footer class="bg-gray-900 text-white py-6 mt-10">
+  <!-- Footer with full navigation -->
+  <footer class="bg-gray-800 text-gray-300 py-6 mt-12">
     <div class="container mx-auto text-center text-sm">
-      &copy; 2025 ReadAura. All rights reserved.
+      <div class="flex flex-wrap justify-center gap-4 mb-3">
+        <a href="index.html" class="hover:text-white transition">Home</a>
+        <a href="about.html" class="hover:text-white transition">About Us</a>
+        <a href="privacy.html" class="hover:text-white transition">Privacy Policy</a>
+        <a href="terms.html" class="hover:text-white transition">Terms of Service</a>
+        <a href="contact.html" class="hover:text-white transition">Contact</a>
+      </div>
+      <p>&copy; 2026 ReadAura. All rights reserved.</p>
     </div>
   </footer>
 
@@ -84,7 +109,6 @@
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 
   <script>
-    // Firebase Config (updated to match your latest API key)
     const firebaseConfig = {
       apiKey: "AIzaSyBIums2N8B9AcAqwbstg1eVOOGsJZXrnPU",
       authDomain: "readaura.firebaseapp.com",
@@ -95,20 +119,45 @@
       appId: "1:824392534073:web:dfa30e0e40fa540f16a5e8",
       measurementId: "G-G6SWNJQYR5"
     };
-
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.database();
 
-    // NAVIGATION
-    function goHome() {
-      window.location.href = "index.html";
-    }
-    function goToAuthorPage() {
-      window.location.href = "become-an-author.html";
+    let currentMode = 'alltime'; // 'alltime' or 'weekly'
+    let allBooksData = [];        // store all books for filtering
+
+    // ---------- AUTH & PROFILE (same as index) ----------
+    function signOut() { auth.signOut(); }
+    function toggleAuth() {
+      if (auth.currentUser) auth.signOut();
+      else window.location.href = 'login.html';
     }
 
-    // LOAD LOGO
+    auth.onAuthStateChanged(async (user) => {
+      const profileDiv = document.getElementById('user-profile');
+      const authBtn = document.getElementById('auth-btn');
+      if (user) {
+        const snapshot = await db.ref('users/' + user.uid).once('value');
+        const profile = snapshot.val();
+        if (profile && profile.firstName) {
+          profileDiv.classList.remove('hidden');
+          authBtn.classList.add('hidden');
+          document.getElementById('user-firstname').innerText = profile.firstName;
+          const shadowDiv = document.getElementById('avatar-shadow');
+          if (profile.gender === 'male') shadowDiv.innerHTML = '<i class="fas fa-user-astronaut fa-lg text-purple-700"></i>';
+          else if (profile.gender === 'female') shadowDiv.innerHTML = '<i class="fas fa-user-circle fa-lg text-pink-500"></i>';
+          else shadowDiv.innerHTML = '<i class="fas fa-user fa-lg text-gray-500"></i>';
+        } else {
+          // No profile completed – redirect
+          window.location.href = 'complete-profile.html';
+        }
+      } else {
+        profileDiv.classList.add('hidden');
+        authBtn.classList.remove('hidden');
+      }
+    });
+
+    // ---------- LOGO ----------
     function loadLogo() {
       db.ref("site/logo").on("value", snap => {
         const logoUrl = snap.val();
@@ -117,54 +166,77 @@
       });
     }
 
-    // LOAD TOP NOVELS BY TOTAL VIEWS
-    function loadTopNovels() {
-      const list = document.getElementById("top-novels-list");
-      db.ref("books").on("value", snap => {
-        if (!snap.exists()) {
-          list.innerHTML = "<p class='text-center text-gray-500'>No novels found.</p>";
-          return;
-        }
-
-        let novels = [];
-        snap.forEach(bookSnap => {
-          const data = bookSnap.val();
-          novels.push({
-            id: bookSnap.key,
-            title: data.title || "Untitled Novel",
-            author: data.author || "Unknown Author",
-            cover: data.cover || "https://via.placeholder.com/150?text=No+Cover",
-            totalViews: data.views || 0     // ← CHANGED: use total 'views'
-          });
+    // ---------- LOAD BOOKS & RENDER ----------
+    async function loadBooks() {
+      const snapshot = await db.ref("books").once("value");
+      if (!snapshot.exists()) {
+        document.getElementById("novels-list").innerHTML = "<p class='text-center text-gray-500'>No novels found.</p>";
+        return;
+      }
+      allBooksData = [];
+      snapshot.forEach(child => {
+        const data = child.val();
+        allBooksData.push({
+          id: child.key,
+          title: data.title || "Untitled",
+          author: data.author || "Unknown",
+          cover: data.cover || "https://via.placeholder.com/150x210?text=No+Cover",
+          totalViews: data.views || 0,
+          weeklyViews: data.weeklyViews || 0,
+          description: data.description || ""
         });
+      });
+      renderCurrentMode();
+    }
 
-        // Sort by total views (descending)
-        novels.sort((a, b) => b.totalViews - a.totalViews);
+    function renderCurrentMode() {
+      if (currentMode === 'alltime') {
+        const sorted = [...allBooksData].sort((a,b) => b.totalViews - a.totalViews);
+        renderList(sorted, 'totalViews');
+      } else {
+        const sorted = [...allBooksData].sort((a,b) => b.weeklyViews - a.weeklyViews);
+        renderList(sorted, 'weeklyViews');
+      }
+    }
 
-        list.innerHTML = "";
-        novels.forEach((novel, index) => {
-          const rank = index + 1;
-          const div = document.createElement("div");
-          div.className = "flex items-center bg-white rounded-lg shadow-md p-4 book-card cursor-pointer hover:bg-purple-50 transition";
-          div.setAttribute("data-id", novel.id);
-          div.onclick = () => openNovel(novel.id);
+    function renderList(books, viewType) {
+      const container = document.getElementById('novels-list');
+      if (!books.length) {
+        container.innerHTML = "<p class='text-center text-gray-500'>No novels to display.</p>";
+        return;
+      }
+      container.innerHTML = '';
+      books.forEach((novel, idx) => {
+        const rank = idx + 1;
+        let rankColor = 'text-gray-500';
+        if (rank === 1) rankColor = 'text-yellow-500';
+        else if (rank === 2) rankColor = 'text-gray-400';
+        else if (rank === 3) rankColor = 'text-amber-600';
 
-          div.innerHTML = `
-            <div class="text-3xl font-bold text-yellow-500 w-10 text-center">${rank}</div>
-            <img src="${novel.cover}" alt="${novel.title}" class="w-20 h-28 object-cover rounded-lg mx-4 border">
-            <div class="flex-1">
-              <h3 class="text-lg font-semibold text-gray-800">${escapeHtml(novel.title)}</h3>
-              <p class="text-sm text-gray-600">by ${escapeHtml(novel.author)}</p>
-              <p class="text-gray-700 mt-1"><span class="font-medium">${novel.totalViews.toLocaleString()}</span> total views</p>
-            </div>
-            <i class="fa-solid fa-angle-right text-gray-400 text-xl"></i>
-          `;
-          list.appendChild(div);
-        });
+        const viewCount = viewType === 'totalViews' ? novel.totalViews : novel.weeklyViews;
+        const viewLabel = viewType === 'totalViews' ? 'total views' : 'views this week';
+
+        const div = document.createElement('div');
+        div.className = "flex items-center bg-white rounded-lg shadow-md p-4 book-card cursor-pointer hover:shadow-lg transition";
+        div.setAttribute("data-id", novel.id);
+        div.setAttribute("data-title", novel.title.toLowerCase());
+        div.onclick = () => window.location.href = `book.html?id=${encodeURIComponent(novel.id)}`;
+
+        div.innerHTML = `
+          <div class="text-3xl font-bold ${rankColor} w-12 text-center">${rank}</div>
+          <img src="${novel.cover}" alt="${escapeHtml(novel.title)}" class="w-20 h-28 object-cover rounded-lg mx-4 border shadow-sm">
+          <div class="flex-1">
+            <h3 class="text-lg font-semibold text-gray-800">${escapeHtml(novel.title)}</h3>
+            <p class="text-sm text-gray-600">by ${escapeHtml(novel.author)}</p>
+            <p class="text-purple-700 text-sm mt-1"><i class="fas fa-eye mr-1"></i> ${viewCount.toLocaleString()} ${viewLabel}</p>
+            ${novel.description ? `<p class="text-gray-500 text-xs mt-1 line-clamp-2 hidden sm:block">${escapeHtml(novel.description.substring(0, 100))}${novel.description.length > 100 ? '…' : ''}</p>` : ''}
+          </div>
+          <i class="fa-solid fa-angle-right text-gray-400 text-xl ml-2"></i>
+        `;
+        container.appendChild(div);
       });
     }
 
-    // Helper to escape HTML (security)
     function escapeHtml(str) {
       if (!str) return '';
       return str.replace(/[&<>]/g, function(m) {
@@ -175,33 +247,57 @@
       });
     }
 
-    function openNovel(bookId) {
-      window.location.href = `book.html?id=${encodeURIComponent(bookId)}`;
+    // ---------- TAB SWITCHING ----------
+    function showAllTime() {
+      currentMode = 'alltime';
+      document.getElementById('tab-alltime').classList.add('tab-active');
+      document.getElementById('tab-alltime').classList.remove('tab-inactive');
+      document.getElementById('tab-weekly').classList.add('tab-inactive');
+      document.getElementById('tab-weekly').classList.remove('tab-active');
+      renderCurrentMode();
+      // reset search input and filter
+      document.getElementById('search-input').value = '';
+      filterNovels();
     }
 
-    // AUTH SYSTEM (kept as original Google sign‑in – you can change later)
-    function toggleAuth() {
-      if (auth.currentUser) auth.signOut();
-      else auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
+    function showWeekly() {
+      currentMode = 'weekly';
+      document.getElementById('tab-weekly').classList.add('tab-active');
+      document.getElementById('tab-weekly').classList.remove('tab-inactive');
+      document.getElementById('tab-alltime').classList.add('tab-inactive');
+      document.getElementById('tab-alltime').classList.remove('tab-active');
+      renderCurrentMode();
+      document.getElementById('search-input').value = '';
+      filterNovels();
     }
 
-    auth.onAuthStateChanged(user => {
-      document.getElementById("auth-btn").innerText = user ? "Sign Out" : "Sign In";
-    });
-
-    // SEARCH
-    function searchNovels() {
-      const query = document.getElementById("search-input").value.toLowerCase();
-      const cards = document.querySelectorAll("#top-novels-list .book-card");
+    // ---------- SEARCH / FILTER (works on current visible list) ----------
+    function filterNovels() {
+      const query = document.getElementById('search-input').value.toLowerCase().trim();
+      const cards = document.querySelectorAll('#novels-list .book-card');
       cards.forEach(card => {
-        const title = card.querySelector("h3").innerText.toLowerCase();
-        card.style.display = title.includes(query) ? "" : "none";
+        const title = card.getAttribute('data-title') || '';
+        if (query === '' || title.includes(query)) {
+          card.style.display = '';
+        } else {
+          card.style.display = 'none';
+        }
       });
     }
 
-    // INIT
+    // ---------- NAVIGATION HELPERS ----------
+    function goHome() { window.location.href = "index.html"; }
+    function goToAuthorPage() { window.location.href = "become-an-author.html"; }
+
+    // ---------- INIT ----------
     loadLogo();
-    loadTopNovels();
+    loadBooks().then(() => {
+      // After books loaded, attach data-title attributes for search
+      document.querySelectorAll('#novels-list .book-card').forEach(card => {
+        const titleElem = card.querySelector('h3');
+        if (titleElem) card.setAttribute('data-title', titleElem.innerText.toLowerCase());
+      });
+    });
   </script>
 </body>
 </html>
