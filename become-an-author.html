@@ -20,11 +20,23 @@
       background-color: white;
       box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
+    .loading-spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 1s ease-in-out infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
   </style>
 </head>
 <body class="bg-gray-50 font-sans text-gray-800">
 
-  <!-- ========== HEADER (same as index.html) ========== -->
+  <!-- ========== HEADER ========== -->
   <header class="p-3 flex items-center justify-between">
     <div class="flex items-center space-x-4">
       <div id="logo" class="cursor-pointer flex items-center" onclick="window.location.href='index.html'">
@@ -41,6 +53,10 @@
       <div class="flex items-center bg-gray-100 px-3 py-1 rounded w-48 sm:w-64">
         <i class="fas fa-search text-gray-500 mr-2"></i>
         <input id="search-input" type="text" placeholder="Search books..." class="bg-transparent outline-none w-full text-sm">
+      </div>
+      <!-- Profile / Auth will be handled by Firebase -->
+      <div id="auth-section">
+        <button id="auth-btn" class="bg-purple-600 text-white px-3 py-1 rounded" onclick="handleAuth()">Sign In</button>
       </div>
     </div>
   </header>
@@ -95,12 +111,11 @@
         <li>Upload your story through the Author Dashboard.</li>
       </ol>
 
-      <!-- Button now goes to Author Agreement page -->
+      <!-- Dynamic Button: checks if already accepted -->
       <div class="text-center mt-8">
-        <a href="author-agreement.html"
-           class="inline-block bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 px-6 rounded-full shadow-lg transition">
+        <button id="getStartedBtn" class="inline-block bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 px-6 rounded-full shadow-lg transition">
           📄 Read & Accept Author Agreement
-        </a>
+        </button>
       </div>
     </div>
 
@@ -128,31 +143,145 @@
       </div>
     </div>
 
-    <!-- Join Section (now BLUE) -->
+    <!-- Join Section (BLUE) – main call to action -->
     <div class="bg-blue-600 p-10 rounded-2xl text-center shadow-lg">
       <h2 class="text-3xl font-bold mb-4 text-white">🌟 Join the ReadAura Author Community</h2>
       <p class="max-w-2xl mx-auto mb-6 text-lg text-white">
         Publish your stories for free, grow your reader base, and earn through your affiliate links.  
         Your words deserve to be read.
       </p>
-      <a href="author-agreement.html"
-         class="bg-white text-purple-600 font-semibold py-3 px-6 rounded-full hover:bg-gray-100 transition">
+      <button id="startPublishingBtn" class="bg-white text-purple-600 font-semibold py-3 px-6 rounded-full hover:bg-gray-100 transition">
         📖 Start Publishing
-      </a>
+      </button>
     </div>
   </section>
 
-  <!-- ========== FOOTER (same as index.html) ========== -->
+  <!-- ========== FOOTER ========== -->
   <footer class="bg-gray-200 text-gray-700 p-4 mt-8 text-center">
     <a href="index.html" class="text-purple-600 hover:underline mx-2">Home</a> |
     <a href="about.html" class="text-purple-600 hover:underline mx-2">About Us</a> |
     <a href="privacy.html" class="text-purple-600 hover:underline mx-2">Privacy Policy</a> |
-    <a href="terms.html" class="text-purple-600 hover:underline mx-2">Terms of Service</a>
+    <a href="terms.html" class="text-purple-600 hover:underline mx-2">Terms of Service</a> |
+    <a href="contact.html" class="text-purple-600 hover:underline mx-2">Contact</a>
     <p class="mt-2 text-sm">&copy; 2026 ReadAura. All rights reserved.</p>
   </footer>
 
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+
   <script>
-    // Simple search redirect (optional)
+    // Firebase configuration (same as your project)
+    const firebaseConfig = {
+      apiKey: "AIzaSyBIums2N8B9AcAqwbstg1eVOOGsJZXrnPU",
+      authDomain: "readaura.firebaseapp.com",
+      databaseURL: "https://readaura-default-rtdb.firebaseio.com",
+      projectId: "readaura",
+      storageBucket: "readaura.appspot.com",
+      messagingSenderId: "824392534073",
+      appId: "1:824392534073:web:dfa30e0e40fa540f16a5e8",
+      measurementId: "G-G6SWNJQYR5"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.database();
+
+    // DOM elements
+    const authBtn = document.getElementById('auth-btn');
+    const getStartedBtn = document.getElementById('getStartedBtn');
+    const startPublishingBtn = document.getElementById('startPublishingBtn');
+
+    // Helper: redirect to author dashboard
+    function goToDashboard() {
+      window.location.href = '5Authordashboard.html';
+    }
+
+    // Helper: redirect to author agreement page
+    function goToAgreement() {
+      window.location.href = 'author-agreement.html';
+    }
+
+    // Main check: if user is logged in and has already accepted agreement, redirect to dashboard.
+    // Otherwise, show agreement.
+    async function handleAuthorAccess() {
+      const user = auth.currentUser;
+      if (!user) {
+        // Not logged in – ask to sign in, then come back
+        const confirmLogin = confirm('You need to sign in first. Would you like to go to the login page?');
+        if (confirmLogin) {
+          window.location.href = `login.html?redirect=become-an-author.html`;
+        }
+        return;
+      }
+
+      // User is logged in – check agreement status
+      try {
+        // Show loading indicator on button (optional)
+        startPublishingBtn.disabled = true;
+        startPublishingBtn.innerHTML = '<span class="loading-spinner"></span> Checking...';
+        
+        // Check in /authors/{uid} for agreementAccepted flag
+        const authorSnap = await db.ref(`authors/${user.uid}/agreementAccepted`).once('value');
+        const agreementAccepted = authorSnap.val() === true;
+        
+        if (agreementAccepted) {
+          // Already accepted – go directly to dashboard
+          goToDashboard();
+        } else {
+          // Not accepted – go to agreement form
+          goToAgreement();
+        }
+      } catch (error) {
+        console.error('Error checking agreement:', error);
+        alert('An error occurred. Please try again later.');
+      } finally {
+        startPublishingBtn.disabled = false;
+        startPublishingBtn.innerHTML = '📖 Start Publishing';
+      }
+    }
+
+    // Same for the "Get Started" button
+    function handleGetStarted() {
+      const user = auth.currentUser;
+      if (!user) {
+        const confirmLogin = confirm('Please sign in first. Go to login page?');
+        if (confirmLogin) window.location.href = `login.html?redirect=become-an-author.html`;
+        return;
+      }
+      // Instead of re-checking every time, we can simply redirect to agreement.
+      // But if they have already accepted, they would go to agreement again (which will redirect to dashboard anyway).
+      // To avoid that, we can do a check and go to dashboard if accepted.
+      db.ref(`authors/${user.uid}/agreementAccepted`).once('value').then(snap => {
+        if (snap.val() === true) {
+          goToDashboard();
+        } else {
+          goToAgreement();
+        }
+      }).catch(() => goToAgreement());
+    }
+
+    // Update sign in/out button based on auth state
+    function updateAuthUI(user) {
+      if (user) {
+        authBtn.textContent = 'Sign Out';
+        authBtn.onclick = () => auth.signOut();
+      } else {
+        authBtn.textContent = 'Sign In';
+        authBtn.onclick = () => window.location.href = 'login.html';
+      }
+    }
+
+    // Listen to auth state changes
+    auth.onAuthStateChanged(user => {
+      updateAuthUI(user);
+    });
+
+    // Attach click handlers
+    startPublishingBtn.addEventListener('click', handleAuthorAccess);
+    getStartedBtn.addEventListener('click', handleGetStarted);
+
+    // Search functionality (simple)
     document.getElementById('search-input')?.addEventListener('keypress', function(e) {
       if (e.key === 'Enter') {
         window.location.href = `index.html?search=${encodeURIComponent(this.value)}`;
