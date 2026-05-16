@@ -1351,7 +1351,7 @@
                 </div>
             </section>
 
-            <!-- Create Story Section (updated with Type and tag limit) -->
+            <!-- Create Story Section -->
             <section id="create-story" class="content-section" style="display: none;">
                 <div class="section-header">
                     <h2>Create New Story</h2>
@@ -1366,7 +1366,6 @@
                             <label class="form-label" for="story-description">Description</label>
                             <textarea id="story-description" class="form-textarea" placeholder="Enter story description"></textarea>
                         </div>
-                        <!-- NEW: Book Type Radio Buttons -->
                         <div class="form-group">
                             <label class="form-label">Type of Book <span class="text-gray-500 text-sm">(choose one)</span></label>
                             <div class="radio-group">
@@ -1413,7 +1412,7 @@
                 </div>
                 <div class="section-body">
                     <div id="my-stories-list">
-                        <p class="text-gray-500">You haven't created any stories yet. <a href="#" onclick="showSection('create-story')" class="text-purple-600">Create your first story</a>.</p>
+                        <p class="text-gray-500">No stories yet. <a href="#" onclick="showSection('create-story')" class="text-purple-600">Create your first story</a>.</p>
                     </div>
                 </div>
             </section>
@@ -1517,7 +1516,7 @@
                 </div>
             </section>
 
-            <!-- Author Contract Section (Read-only) -->
+            <!-- Author Contract Section -->
             <section id="author-contract" class="content-section" style="display: none;">
                 <div class="section-header">
                     <h2>Author Contract Agreement</h2>
@@ -1855,7 +1854,7 @@
             }
         });
 
-        // Tags limit: max 4
+        // Tags limit (max 4)
         const tagsInput = document.getElementById('story-tags-input');
         const tagsContainer = document.getElementById('story-tags-container');
         const tagWarning = document.getElementById('tag-warning');
@@ -1927,25 +1926,84 @@
             });
         });
 
+        // FIXED: Check story title exists (handles both old and new)
         function checkStoryTitleExists(title) {
-            return db.ref('books').orderByChild('authorId').equalTo(currentUser.uid).once('value')
-                .then(snapshot => {
+            return new Promise((resolve) => {
+                if (!currentUser) return resolve(false);
+                const uid = currentUser.uid;
+                // First try by authorId
+                db.ref('books').orderByChild('authorId').equalTo(uid).once('value', (snap) => {
                     let exists = false;
-                    snapshot.forEach(child => { if (child.val().title === title) exists = true; });
-                    return exists;
-                });
+                    snap.forEach(child => { if (child.val().title === title) exists = true; });
+                    if (exists) return resolve(true);
+                    // Fallback: check all books where author matches email/name
+                    db.ref('books').once('value', (allSnap) => {
+                        allSnap.forEach(child => {
+                            const book = child.val();
+                            if ((book.author === currentUser.email || book.author === currentUser.displayName) &&
+                                book.title === title) exists = true;
+                        });
+                        resolve(exists);
+                    });
+                }).catch(() => resolve(false));
+            });
         }
 
+        // FIXED: Load user stories (with fallback for old data)
         function loadUserStories() {
             if (!currentUser) return;
-            db.ref('books').orderByChild('authorId').equalTo(currentUser.uid).on('value', (snapshot) => {
-                userStories = [];
-                snapshot.forEach(child => userStories.push({ id: child.key, ...child.val() }));
-                updateStoriesCount();
-                displayUserStories();
-                updateWritingProgress();
-                updateChapterDraftsCount();
-            });
+            const uid = currentUser.uid;
+            const userEmail = currentUser.email;
+            const userName = currentUser.displayName || userEmail;
+
+            db.ref('books').orderByChild('authorId').equalTo(uid).once('value', (snapshot) => {
+                let stories = [];
+                snapshot.forEach(child => stories.push({ id: child.key, ...child.val() }));
+                
+                if (stories.length > 0) {
+                    userStories = stories;
+                    updateStoriesCount();
+                    displayUserStories();
+                    updateWritingProgress();
+                    updateChapterDraftsCount();
+                    // Attach realtime listener
+                    db.ref('books').orderByChild('authorId').equalTo(uid).on('value', (snap) => {
+                        userStories = [];
+                        snap.forEach(child => userStories.push({ id: child.key, ...child.val() }));
+                        updateStoriesCount();
+                        displayUserStories();
+                        updateWritingProgress();
+                        updateChapterDraftsCount();
+                    });
+                } else {
+                    // Fallback: load all books and filter by author field
+                    db.ref('books').once('value', (allSnap) => {
+                        const allBooks = [];
+                        allSnap.forEach(child => {
+                            const book = child.val();
+                            if (book.author === userEmail || book.author === userName || 
+                                (book.authorId && book.authorId === uid)) {
+                                allBooks.push({ id: child.key, ...book });
+                            }
+                        });
+                        userStories = allBooks;
+                        updateStoriesCount();
+                        displayUserStories();
+                        updateWritingProgress();
+                        updateChapterDraftsCount();
+
+                        // Migrate old stories to include authorId
+                        if (allBooks.length > 0) {
+                            allBooks.forEach(book => {
+                                if (!book.authorId) {
+                                    db.ref('books/' + book.id).update({ authorId: uid });
+                                }
+                            });
+                            console.log('Migrated ' + allBooks.length + ' stories to include authorId.');
+                        }
+                    });
+                }
+            }).catch(err => console.error('Error loading stories:', err));
         }
 
         function updateStoriesCount() {
@@ -2032,10 +2090,8 @@
                 document.getElementById('story-cover').value = story.cover || '';
                 storyTags = story.tags || [];
                 updateTagsDisplay();
-                // Set the correct radio for bookType
                 const type = story.bookType || 'fiction';
                 document.querySelector(`input[name="bookType"][value="${type}"]`).checked = true;
-                const originalSubmit = createStoryForm.onsubmit;
                 createStoryForm.onsubmit = function(e) { e.preventDefault(); updateStory(storyId); };
                 const submitBtn = createStoryForm.querySelector('button[type="submit"]');
                 submitBtn.textContent = 'Update Story';
