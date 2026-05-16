@@ -108,7 +108,6 @@
 
     <!-- Full Agreement Text (scrollable) -->
     <div class="agreement-text">
-        <!-- The complete legal text you provided -->
         <h1>AUTHOR AGREEMENT</h1>
         <p><strong>For Authors Publishing on ReadAura.xyz</strong></p>
         <p class="warning">IMPORTANT NOTICE: Please read this Agreement carefully before accessing the Author Dashboard or publishing any content on ReadAura.xyz. By creating an author account, accessing the dashboard, or publishing content on the platform, you agree to be legally bound by this Agreement.</p>
@@ -259,7 +258,21 @@
     const auth = firebase.auth();
     const db = firebase.database();
 
-    // DOM elements
+    // ========== REDIRECT HANDLING ==========
+    // Get redirect URL from query parameter (e.g., ?redirect=become-an-author.html)
+    let redirectTo = new URLSearchParams(window.location.search).get('redirect');
+    // Validate: only allow relative paths (security)
+    if (redirectTo) {
+        if (redirectTo.startsWith('http://') || redirectTo.startsWith('https://') || redirectTo.startsWith('//')) {
+            redirectTo = null;
+        }
+        // Prevent loops
+        if (redirectTo === 'author-agreement.html') redirectTo = null;
+    }
+    // Default: go to author dashboard
+    if (!redirectTo) redirectTo = '5Authordashboard.html';
+
+    // ========== DOM elements ==========
     const form = document.getElementById('agreementForm');
     const fullNameInput = document.getElementById('fullName');
     const penNameInput = document.getElementById('penName');
@@ -270,17 +283,22 @@
     const messageDiv = document.getElementById('formMessage');
     const submitBtn = document.getElementById('submitBtn');
 
-    // Auto-fill email and date if user is logged in
+    // ========== Auto-fill email and date if user is logged in ==========
     auth.onAuthStateChanged((user) => {
         if (user) {
             emailInput.value = user.email || '';
+        } else {
+            // Not logged in – redirect to login with return URL
+            const returnUrl = encodeURIComponent(window.location.pathname + window.location.search);
+            window.location.href = `login.html?redirect=${returnUrl}`;
+            return;
         }
         // Set today's date as default
         const today = new Date().toISOString().split('T')[0];
         dateInput.value = today;
     });
 
-    // Show message helper
+    // Helper to show message
     function showMessage(text, isError = true) {
         messageDiv.textContent = text;
         messageDiv.className = `message ${isError ? 'error' : 'success'}`;
@@ -306,21 +324,20 @@
         if (!signature) { showMessage('Please type your signature (full name).'); return; }
         if (!agreed) { showMessage('You must check the box to accept the agreement.'); return; }
 
-        // Check that the user is logged in (Firebase Auth)
         const user = auth.currentUser;
         if (!user) {
-            // Redirect to login page, but store current URL to come back
+            // Should not happen because we already redirect, but safeguard
             window.location.href = `login.html?redirect=author-agreement.html`;
             return;
         }
 
-        // Disable button during submission
+        // Disable button
         submitBtn.disabled = true;
         submitBtn.textContent = 'Saving...';
 
         try {
-            // Save author agreement data
-            await db.ref('authors/' + user.uid).set({
+            // Save author agreement data (ensure we don't overwrite existing, just merge)
+            await db.ref('authors/' + user.uid).update({
                 userId: user.uid,
                 fullLegalName: fullName,
                 penName: penName || null,
@@ -331,14 +348,16 @@
                 acceptedAt: firebase.database.ServerValue.TIMESTAMP
             });
 
-            // Mark the user as an author in their profile
-            await db.ref('users/' + user.uid + '/isAuthor').set(true);
-            await db.ref('users/' + user.uid + '/authorSince').set(firebase.database.ServerValue.TIMESTAMP);
+            // Mark user as author
+            await db.ref('users/' + user.uid).update({
+                isAuthor: true,
+                authorSince: firebase.database.ServerValue.TIMESTAMP
+            });
 
-            showMessage('Agreement accepted successfully! Redirecting to your dashboard...', false);
+            showMessage('Agreement accepted successfully! Redirecting...', false);
             setTimeout(() => {
-                window.location.href = '5Authordashboard.html';
-            }, 2000);
+                window.location.href = redirectTo;
+            }, 1500);
         } catch (error) {
             console.error(error);
             showMessage('Error: ' + error.message);
